@@ -1,4 +1,5 @@
-import './styles/App.css'
+import './styles/global.css'
+import './styles/varibles.css'
 import RegistrationPage from './pages/registrationPage.jsx'
 
 function App() {

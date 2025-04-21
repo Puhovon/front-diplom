@@ -1,6 +1,6 @@
 import bg from "../assets/registration.svg";
 import RegistrationForm from "../components/forms/RegistrationForm";
-import '../styles/registration.css'
+import '../styles/registration.module.css'
 
 export default () => {
     return (
