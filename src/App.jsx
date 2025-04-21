@@ -1,11 +1,24 @@
-import './styles/global.css'
-import './styles/varibles.css'
-import RegistrationPage from './pages/registrationPage.jsx'
+// import RegistrationPage from '@pages/registrationPage.jsx'
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import Home from '@pages/HomePage';
+import Layout from '@components/Layout';
+
+
+import '@styles/global.css'
+import '@styles/varibles.css'
+
+
 
 function App() {
 
   return (
-    <RegistrationPage/>
+    <BrowserRouter>
+      <Routes>
+        <Route element={<Layout />}>
+          <Route path="/" element={<Home />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
   )
 }
 
