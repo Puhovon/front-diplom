@@ -5,7 +5,7 @@ import Layout from '@components/Layout';
 
 
 import '@styles/global.css'
-import '@styles/varibles.css'
+import '@styles/variables.css'
 
 
 
