@@ -1,10 +1,10 @@
 import RegistrationForm from "@components/forms/RegistrationForm";
 import '@styles/registrationPage.module.css'
 
-export default () => {
-    return (
-        <>
-            <RegistrationForm />
-        </>)
-}
+const Registration = () => {
+    return(
+        <div className={styles.registration}>Registration</div>
+    )
+};
+export default Registration;
 
