@@ -1,0 +1,60 @@
+.container {
+    max-width: 1280px;
+    margin: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.logoLink {
+    font-weight: bolder;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 22px;
+}
+
+.logoLink img {
+    max-width: 44px;
+}
+
+.navList {
+    list-style: none;
+    display: flex;
+    align-items: center;
+}
+
+.navLink {
+    font-size: 20px;
+    line-height: 30%;
+    font-weight: 300;
+    transition: all .3s ease-in-out;
+    padding: 10px 26px;
+}
+.navLink:hover{
+    color: var(--blue-400);
+}
+.active{
+    transition: all .3s ease-in-out;
+    color: var(--blue-400);
+}
+
+.authButtons {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+.authButton{
+    border-radius: 50px;
+    line-height: 29%;
+    padding: 15px 30px;
+    font-weight: bold;
+    color: var(--white-color);
+    font-size: 18px;
+}
+.authButton:first-child{
+    background-color: var(--headings-black-color);
+}
+.authButton:last-child{
+    background-color: var(--blue-400);
+}

@@ -25,15 +25,15 @@ function App() {
       <Routes>
         <Route element={<Layout />}>
           <Route path="/" element={<Home />} />
-          <Route path="/registration" element={<Registration />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/about" element={<About />} />
           <Route path="/contacts" element={<Contacts />} />
           <Route path="/lawyers" element={<Lawyers />} />
-          <Route path="/login" element={<Login />} />
           <Route path="/passwordChange" element={<PasswordChange />} />
           <Route path="/services" element={<Services />} />
         </Route>
+        <Route path="/login" element={<Login />} />
+        <Route path="/registration" element={<Registration />} />
       </Routes>
     </BrowserRouter>
   )

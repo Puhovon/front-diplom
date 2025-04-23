@@ -10,6 +10,7 @@ const Header = () => {
             <div className={styles.container}>
                 <Link to="/" className={styles.logoLink} aria-label="Homepage">
                     <img src={logo} alt="Company Logo" className={styles.logo} />
+                    LawyerHub
                 </Link>
 
                 <nav className={styles.nav} aria-label="Main navigation">
@@ -18,16 +19,23 @@ const Header = () => {
                             <NavLink to="/" className={({ isActive }) => isActive ? `${styles.navLink} ${styles.active}` : styles.navLink}>
                                 Главная
                             </NavLink>
-                            <NavLink to="/" className={({ isActive }) => isActive ? `${styles.navLink} ${styles.active}` : styles.navLink}>
-                                Услуги
-                            </NavLink>
-                            <NavLink to="/" className={({ isActive }) => isActive ? `${styles.navLink} ${styles.active}` : styles.navLink}>
+                        </li>
+                        <li><NavLink to="/services" className={({ isActive }) => isActive ? `${styles.navLink} ${styles.active}` : styles.navLink}>
+                            Услуги
+                        </NavLink>
+                        </li>
+                        <li>
+                            <NavLink to="/lawyers" className={({ isActive }) => isActive ? `${styles.navLink} ${styles.active}` : styles.navLink}>
                                 Юристы
                             </NavLink>
-                            <NavLink to="/" className={({ isActive }) => isActive ? `${styles.navLink} ${styles.active}` : styles.navLink}>
+                        </li>
+                        <li>
+                            <NavLink to="/about" className={({ isActive }) => isActive ? `${styles.navLink} ${styles.active}` : styles.navLink}>
                                 О нас
                             </NavLink>
-                            <NavLink to="/" className={({ isActive }) => isActive ? `${styles.navLink} ${styles.active}` : styles.navLink}>
+                        </li>
+                        <li>
+                            <NavLink to="/contacts" className={({ isActive }) => isActive ? `${styles.navLink} ${styles.active}` : styles.navLink}>
                                 Контакты
                             </NavLink>
                         </li>
@@ -35,11 +43,11 @@ const Header = () => {
                     </ul>
                 </nav>
                 <div className={styles.authButtons}>
-                    <Link to="/register" className={`${styles.authButton} ${styles.register}`}>
-                        Регистрация
-                    </Link>
                     <Link to="/login" className={styles.authButton}>
                         Вход
+                    </Link>
+                    <Link to="/register" className={`${styles.authButton} ${styles.register}`}>
+                        Регистрация
                     </Link>
                 </div>
             </div>
