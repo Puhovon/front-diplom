@@ -1,24 +1,23 @@
-
-
 const RegistrationForm = () => {
     return (
         <>
             <form>
-                <label htmlFor="Name">Имя</label>
-                <input id="Name" className="Name inputField" type="text"></input>
+                <label htmlFor="name">Имя</label>
+                <input id="name" className="name inputField" type="text"/>
 
                 <label htmlFor="email">Почта</label>
-                <input id="email" className="email inputField" type="email"></input>
+                <input id="email" className="email inputField" type="email"/>
 
-                <label htmlFor="Password">Пароль</label>
-                <input id="Password" className="Password inputField" type="password"></input>
+                <label htmlFor="password">Пароль</label>
+                <input id="password" className="password inputField" type="password"/>
 
-                <label htmlFor="Password2">Потверждение пароля</label>
-                <input id="Password2" className="Password2 inputField" type="password"></input>
+                <label htmlFor="password2">Потверждение пароля</label>
+                <input id="password2" className="password2 inputField" type="password"/>
 
                 <button type="submit">Зарегистрироваться</button>
+                <p>Уже есть аккаунт? <a href="tidolbayob">Войти</a></p>
             </form>
-            <p>Уже есть аккаунт?</p><a>Войти</a>
+            
         </>)
 }
 
