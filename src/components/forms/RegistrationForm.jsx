@@ -14,7 +14,7 @@ const RegistrationForm = () => {
                 <label htmlFor="password2">Потверждение пароля</label>
                 <input id="password2" className="password2 inputField" type="password"/>
 
-                <button type="submit">Зарегистрироваться</button>
+                <button type="submit" className="button">Зарегистрироваться</button>
                 <p>Уже есть аккаунт? <a href="tidolbayob">Войти</a></p>
             </form>
             
