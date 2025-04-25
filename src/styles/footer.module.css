@@ -1,0 +1,115 @@
+/* Стили для подвала */
+footer {
+    padding: 60px 40px 50px 40px;
+    background-color: var(--blue-400);
+}
+
+/* Цвет текста для всех элементов подвала */
+footer * {
+    color: var(--white-color);
+}
+
+/* Контейнер для ограничения ширины содержимого */
+.container {
+    max-width: 1280px;
+    margin: auto;
+}
+
+/* Контейнер для логотипа */
+.logoContainer {
+    margin-bottom: 40px;
+}
+
+/* Выравнивание текста и иконки логотипа */
+.logoContainer * {
+    display: flex;
+    align-items: center;
+    font-weight: bold;
+    font-size: 22px;
+    gap: 10px;
+}
+
+/* Стили для списка ссылок в подвале */
+.list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    font-weight: bold;
+    padding: 0;
+    margin: 0;
+}
+
+/* Макет колонок для содержимого подвала */
+.columns {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+/* Цвет текста для элементов колонок */
+.columns * {
+    color: var(--white-color);
+}
+
+/* Выравнивание содержимого последней колонки */
+.column:last-child {
+    display: flex;
+    align-items: center;
+}
+
+/* Макет секции подписки */
+.subscribe {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+/* Стили для кнопки и поля ввода */
+.button, .input {
+    border: 1px solid #333;
+    border-radius: 8px;
+}
+
+/* Стили для кнопки */
+.button {
+    background-color: var(--button-dark-color);
+    font-weight: bold;
+    font-size: 20px;
+    display: flex;
+    padding: 10px 60px;
+    cursor: pointer;
+}
+
+/* Стили для поля ввода */
+.input {
+    padding: 10px;
+    color: black;
+}
+
+/* Отступ для заголовка */
+.heading {
+    margin-bottom: 30px;
+}
+
+/* Макет иконок социальных сетей */
+.social {
+    display: flex;
+    gap: 15px;
+    margin-top: 30px;
+}
+
+/* Стили для текста копирайта */
+.copyright {
+    margin-top: 50px;
+    font-weight: bold;
+}
+
+/* Адаптивный дизайн для маленьких экранов */
+@media (max-width: 720px) {
+    .columns {
+        flex-direction: column;
+        gap: 40px;
+    }
+}

@@ -77,7 +77,7 @@ const Header = () => {
                     <Link to="/login" className={styles.authButton}>
                         Вход
                     </Link>
-                    <Link to="/register" className={`${styles.authButton} ${styles.register}`}>
+                    <Link to="/registration" className={`${styles.authButton} ${styles.register}`}>
                         Регистрация
                     </Link>
                 </div>
@@ -151,7 +151,7 @@ const Header = () => {
                             </li>
                             <li>
                                 <NavLink 
-                                    to="/register" 
+                                    to="/registration" 
                                     className={({ isActive }) =>isActive ? `${styles.mobileNavLink} ${styles.active}` : styles.mobileNavLink}
                                     onClick={toggleMenu}
                                 >
