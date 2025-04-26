@@ -18,7 +18,7 @@ const Registration = () => {
                     <input id="password2" className={styles.inputField} type="password" />
 
                     <button type="submit" className={styles.button}>Зарегистрироваться</button>
-                    <p>Уже есть аккаунт? <a href="tidolbayob">Войти</a></p>
+                    <p>Уже есть аккаунт? <a href="login">Войти</a></p>
                 </form>
             </div>
         </div>

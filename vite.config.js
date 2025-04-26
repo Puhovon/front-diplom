@@ -14,4 +14,10 @@ export default defineConfig({
       '@styles': path.resolve(__dirname, 'src/styles'),
     },
   },
+  server: {
+    port: 5173,
+    strictPort: true,  // Запрещает автоматический выбор другого порта
+    host: true,       // Добавьте это, чтобы разрешить доступ с других устройств в сети
+    open: true        // Автоматически открывать браузер
+  }
 })
