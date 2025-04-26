@@ -107,9 +107,19 @@ footer * {
 }
 
 /* Адаптивный дизайн для маленьких экранов */
-@media (max-width: 720px) {
+@media (max-width: 768px) {
     .columns {
         flex-direction: column;
         gap: 40px;
+    }
+    .column{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+    }
+    .copyright{
+        text-align: center;
     }
 }
