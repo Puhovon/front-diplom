@@ -22,9 +22,9 @@ const Header = () => {
                 <nav className={styles.nav} aria-label="Main navigation">
                     <ul className={styles.navList}>
                         <li>
-                            <NavLink 
-                                to="/" 
-                                className={({ isActive }) => 
+                            <NavLink
+                                to="/"
+                                className={({ isActive }) =>
                                     isActive ? `${styles.navLink} ${styles.active}` : styles.navLink
                                 }
                             >
@@ -32,9 +32,9 @@ const Header = () => {
                             </NavLink>
                         </li>
                         <li>
-                            <NavLink 
-                                to="/services" 
-                                className={({ isActive }) => 
+                            <NavLink
+                                to="/services"
+                                className={({ isActive }) =>
                                     isActive ? `${styles.navLink} ${styles.active}` : styles.navLink
                                 }
                             >
@@ -42,9 +42,9 @@ const Header = () => {
                             </NavLink>
                         </li>
                         <li>
-                            <NavLink 
-                                to="/lawyers" 
-                                className={({ isActive }) => 
+                            <NavLink
+                                to="/lawyers"
+                                className={({ isActive }) =>
                                     isActive ? `${styles.navLink} ${styles.active}` : styles.navLink
                                 }
                             >
@@ -52,9 +52,9 @@ const Header = () => {
                             </NavLink>
                         </li>
                         <li>
-                            <NavLink 
-                                to="/about" 
-                                className={({ isActive }) => 
+                            <NavLink
+                                to="/about"
+                                className={({ isActive }) =>
                                     isActive ? `${styles.navLink} ${styles.active}` : styles.navLink
                                 }
                             >
@@ -62,9 +62,9 @@ const Header = () => {
                             </NavLink>
                         </li>
                         <li>
-                            <NavLink 
-                                to="/contacts" 
-                                className={({ isActive }) => 
+                            <NavLink
+                                to="/contacts"
+                                className={({ isActive }) =>
                                     isActive ? `${styles.navLink} ${styles.active}` : styles.navLink
                                 }
                             >
@@ -82,8 +82,8 @@ const Header = () => {
                     </Link>
                 </div>
                 <div className={styles.burgerMenu}>
-                    <button 
-                        className={`${styles.burgerButton} ${isMenuOpen ? styles.active : ''}`} 
+                    <button
+                        className={`${styles.burgerButton} ${isMenuOpen ? styles.active : ''}`}
                         onClick={toggleMenu}
                         aria-label="Toggle menu"
                         aria-expanded={isMenuOpen}
@@ -93,11 +93,15 @@ const Header = () => {
                         <span className={styles.burgerIcon}></span>
                     </button>
                     <div className={`${styles.mobileMenu} ${isMenuOpen ? styles.open : ''}`}>
+                        <Link to="/" className={styles.logoLinkMobile} onClick={toggleMenu} aria-label="Homepage">
+                            <img src={logo} alt="Company Logo" className={styles.logo} />
+                            LawyerHub
+                        </Link>
                         <div className={styles.closeMobileMenu} onClick={toggleMenu}>✖</div>
                         <ul className={styles.mobileNavList}>
                             <li>
-                                <NavLink 
-                                    to="/" 
+                                <NavLink
+                                    to="/"
                                     className={({ isActive }) => isActive ? `${styles.mobileNavLink} ${styles.active}` : styles.mobileNavLink}
                                     onClick={toggleMenu}
                                 >
@@ -105,8 +109,8 @@ const Header = () => {
                                 </NavLink>
                             </li>
                             <li>
-                                <NavLink 
-                                    to="/services" 
+                                <NavLink
+                                    to="/services"
                                     className={({ isActive }) => isActive ? `${styles.mobileNavLink} ${styles.active}` : styles.mobileNavLink}
                                     onClick={toggleMenu}
                                 >
@@ -114,8 +118,8 @@ const Header = () => {
                                 </NavLink>
                             </li>
                             <li>
-                                <NavLink 
-                                    to="/lawyers" 
+                                <NavLink
+                                    to="/lawyers"
                                     className={({ isActive }) => isActive ? `${styles.mobileNavLink} ${styles.active}` : styles.mobileNavLink}
                                     onClick={toggleMenu}
                                 >
@@ -123,8 +127,8 @@ const Header = () => {
                                 </NavLink>
                             </li>
                             <li>
-                                <NavLink 
-                                    to="/about" 
+                                <NavLink
+                                    to="/about"
                                     className={({ isActive }) => isActive ? `${styles.mobileNavLink} ${styles.active}` : styles.mobileNavLink}
                                     onClick={toggleMenu}
                                 >
@@ -132,17 +136,17 @@ const Header = () => {
                                 </NavLink>
                             </li>
                             <li>
-                                <NavLink 
-                                    to="/contacts" 
-                                    className={({ isActive }) =>isActive ? `${styles.mobileNavLink} ${styles.active}` : styles.mobileNavLink}
+                                <NavLink
+                                    to="/contacts"
+                                    className={({ isActive }) => isActive ? `${styles.mobileNavLink} ${styles.active}` : styles.mobileNavLink}
                                     onClick={toggleMenu}
                                 >
                                     Контакты
                                 </NavLink>
                             </li>
                             <li>
-                                <NavLink 
-                                    to="/login" 
+                                <NavLink
+                                    to="/login"
                                     className={({ isActive }) => isActive ? `${styles.mobileNavLink} ${styles.active}` : styles.mobileNavLink}
                                     onClick={toggleMenu}
                                 >
@@ -150,9 +154,9 @@ const Header = () => {
                                 </NavLink>
                             </li>
                             <li>
-                                <NavLink 
-                                    to="/registration" 
-                                    className={({ isActive }) =>isActive ? `${styles.mobileNavLink} ${styles.active}` : styles.mobileNavLink}
+                                <NavLink
+                                    to="/registration"
+                                    className={({ isActive }) => isActive ? `${styles.mobileNavLink} ${styles.active}` : styles.mobileNavLink}
                                     onClick={toggleMenu}
                                 >
                                     Регистрация
