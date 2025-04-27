@@ -1,6 +1,6 @@
 // import RegistrationPage from '@pages/registrationPage.jsx'
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import Home from '@pages/HomePage.jsx';
+import Home from '@pages/HomePage/HomePage.jsx';
 import Layout from '@components/Layout.jsx';
 import Registration from '@pages/registrationPage.jsx';
 import Profile from '@pages/UserProfilePage.jsx';
