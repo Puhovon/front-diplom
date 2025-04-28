@@ -1,23 +1,22 @@
 import styles from '@styles/registrationPage.module.css'
+
+import Input from '../components/Input/index.jsx';
+
 const Registration = () => {
     return (<>
         <div className={styles.container}>
             <div className={styles.left_side}></div>
             <div className={styles.right_side_container}>
                 <form className={styles.form}>
-                    <label htmlFor="name">Имя</label>
-                    <input id="name" className={styles.inputField} type="email" />
+                    <Input id="name" label="Name" type="email" />
 
-                    <label htmlFor="email">Почта</label>
-                    <input id="email" className={styles.inputField} type="email" />
+                    <Input id="email" label="Email" type="email" />
 
-                    <label htmlFor="password">Пароль</label>
-                    <input id="password" className={styles.inputField} type="password" />
+                    <Input id="password" label="Password" type="password" />
 
-                    <label htmlFor="password2">Потверждение пароля</label>
-                    <input id="password2" className={styles.inputField} type="password" />
+                    <Input id="password2" label="Password" type="password" />
 
-                    <button type="submit" className={styles.button}>Зарегистрироваться</button>
+                    <button type="submit" className={styles.submitButton}>Зарегистрироваться</button>
                     <p>Уже есть аккаунт? <a href="login">Войти</a></p>
                 </form>
             </div>
