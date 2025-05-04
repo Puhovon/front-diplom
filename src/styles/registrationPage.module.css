@@ -1,97 +1,112 @@
-.container {
-    display: flex;
-    height: 100vh;
+.login {
+  display: flex;
+  align-items: center;
+  position: relative;
 }
 
-.left_side {
-    width: 50%;
-    background-image: url('../assets/registration_background.png');
-    background-size: cover;
-    background-position: center;
+.leftWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50%;
+  flex-direction: column;
+  transition: all .3s ease-in-out;
+  padding: 40px;
 }
 
-.right_side_container {
-    width: 50%;
-    padding: 50px;
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+.rightWrapper {
+  background-image: url('/src/assets/login_background.png');
+  background-repeat: no-repeat;
+  background-size: cover;
+  width: 50%;
+  height: 100vh;
+  transition: all .3s ease-in-out;
 }
 
-.form {
-    width: 100%;
-    max-width: 400px;
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
+.loginForm {
+  max-width: 495px;
+  width: 100%;
+  display: flex;
+  gap: 30px;
+  flex-direction: column;
 }
 
-.inputField[type=email],
-.inputField[type=password] {
-    width: 100%;
-    padding: 12px;
-    border-radius: 4px;
-    border: 1px solid #ccc;
-}
-
-.button {
-    width: 100%;
-    padding: 12px;
-    color: white;
-    background-color: #007bff;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-}
-
-.button:hover {
-    background-color: #0056b3;
+.logIn {
+  color: var(--button-blue-color);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 700;
+  font-size: 48px;
+  line-height: 60px;
+  letter-spacing: 0;
+  text-align: center;
+  margin: 0 0 50px 0; /* paragraph spacing снизу */
+  display: flex;
+  align-items: center; /* vertical alignment: middle */
+  justify-content: center; /* horizontal alignment: center */
 }
 
 .submitButton {
-    cursor: pointer;
-    border: none;
-    border-radius: 8px;
-    height: 60px;
-    color: var(--white-color);
-    background-color: var(--button-blue-color);
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    font-weight: 700;
-    font-size: 20px;
-    line-height: 30px;
-    letter-spacing: 0;
-    text-align: center;
-    margin: 0 0 50px 0; /* paragraph spacing снизу */
-    display: flex;
-    align-items: center; /* vertical alignment: middle */
-    justify-content: center; /* horizontal alignment: center */
+  cursor: pointer;
+  border: none;
+  border-radius: 8px;
+  height: 60px;
+  color: var(--white-color);
+  background-color: var(--button-blue-color);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 700;
+  font-size: 20px;
+  line-height: 30px;
+  letter-spacing: 0;
+  text-align: center;
+  margin: 0 0 50px 0; /* paragraph spacing снизу */
+  display: flex;
+  align-items: center; /* vertical alignment: middle */
+  justify-content: center; /* horizontal alignment: center */
+}
+
+.submitButton, .link {
+  transition: all .2s ease-in-out;
+}
+
+.submitButton:hover {
+  background-color: var(--button-blue-hover-color);
+}
+
+.link:hover {
+  color: var(--button-blue-hover-color);
+}
+
+.link {
+  height: 28px;
+  color: var(--button-blue-color);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 28px;
+  letter-spacing: 0;
+  text-align: center;
+  display: flex;
+  align-items: center; /* vertical alignment: middle */
+  justify-content: right; /* horizontal alignment: center */
+}
+
+.registerLinkContainer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.logo {
+  position: absolute;
+  top: 40px;
+  left: 40px;
+}
+
+@media (max-width: 768px) {
+  .rightWrapper {
+    width: 0;
   }
-  
-  .submitButton, .link {
-    transition: all .2s ease-in-out;
+  .leftWrapper {
+    width: 100%;
   }
-  
-  .submitButton:hover {
-    background-color: var(--button-blue-hover-color);
-  }
-  
-  .link:hover {
-    color: var(--button-blue-hover-color);
-  }
-  
-  .link {
-    height: 28px;
-    color: var(--button-blue-color);
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    font-weight: 700;
-    font-size: 18px;
-    line-height: 28px;
-    letter-spacing: 0;
-    text-align: center;
-    display: flex;
-    align-items: center; /* vertical alignment: middle */
-    justify-content: right; /* horizontal alignment: center */
-  }
-  
+}
