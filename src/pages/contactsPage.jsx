@@ -5,4 +5,5 @@ const Contacts = () => {
         <div className={styles.contacts}>Contacts</div>
     )
 };
+
 export default Contacts;
