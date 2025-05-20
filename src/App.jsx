@@ -10,11 +10,12 @@ import Lawyers from '@pages/lawyersPage.jsx';
 import Login from '@pages/LoginPage/LoginPage.jsx';
 import PasswordChange from '@pages/registrationPage.jsx';
 import Services from '@pages/servicesPage.jsx';
-
+import RefreshPassword from '@pages/RefreshPassword/RefreshPassword';
 
 
 import '@styles/global.css'
 import '@styles/variables.css'
+
 
 
 
@@ -31,6 +32,7 @@ function App() {
           <Route path="/lawyers" element={<Lawyers />} />
           <Route path="/passwordChange" element={<PasswordChange />} />
           <Route path="/services" element={<Services />} />
+          <Route path="/passwordRefresh" element={<RefreshPassword />} />
         </Route>
         <Route path="/login" element={<Login />} />
         <Route path="/registration" element={<Registration />} />

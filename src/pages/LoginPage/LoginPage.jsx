@@ -20,7 +20,7 @@ const Login = () => {
             placeholder='Введите электронную почту'
           />
           <Input
-            id='mail'
+            id='pass'
             label='Пароль'
             type='password'
             error={null}
