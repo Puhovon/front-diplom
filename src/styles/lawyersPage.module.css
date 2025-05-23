@@ -1,0 +1,33 @@
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.searchForm {
+    display:flex;
+    align-items: center;
+    background-color: var(--primary-purple-color);
+    border-radius: 10px;
+    padding: 10px 20px;
+}
+
+input{
+    margin: 10px;
+}
+
+.button, .input {
+    border: 1px solid #333;
+    border-radius: 8px;
+}
+
+.button {
+    background-color: var(--button-dark-color);
+    font-weight: bold;
+    font-size: 20px;
+    display: flex;
+    padding: 10px 60px;
+    cursor: pointer;
+    color:white;
+}
