@@ -4,35 +4,33 @@ import LawyerCard from '@components/LawyerCard/index.jsx';
 import pidaras from '@assets/pidaras.jpg'
 const Lawyers = () => {
     return (
-        <div className={styles.container}>
-            <form className={styles.searchForm}>
-                <Input
-                    id='specialization'
-                    type='text'
-                    error={null}
-                    placeholder='Выбрать специализацию' />
-                <Input
-                    id='city'
-                    type='text'
-                    error={null}
-                    placeholder='Выбрать город' />
-                <button type='submit' className={styles.button}>Найти</button>
-            </form>
-            <ul>
-                <li className={styles.findElement}>
-                    <LawyerCard
-                        name="Arkadiy"
-                        specialization="Ugolovka"
-                        city="SPb" />
-                </li>
-                <li className={styles.findElement}>
-                    <LawyerCard
-                        name="Jenya"
-                        specialization="семейная терапия"
-                        city="SPb"
-                        photo={pidaras} />
-                </li>
-            </ul>
+        <div className={styles.lawyers}>
+            <div className={styles.container}>
+                <form className={styles.searchForm}>
+                    <Input
+                        id='specialization'
+                        type='text'
+                        error={null}
+                        placeholder='Выбрать специализацию' />
+                    <button type='submit' className={styles.button}>Найти</button>
+                </form>
+                <ul className={styles.list}>
+                    <li className={styles.findElement}>
+                        <LawyerCard
+                            name="Аркадий Алавердян"
+                            specialization="Уголовное право"
+                            city="Москва"
+                            photo={pidaras} />
+                    </li>
+                    <li className={styles.findElement}>
+                        <LawyerCard
+                            name="Евгений Изотов"
+                            specialization="семейная терапия"
+                            city="Санкт-Питербург"
+                            photo={pidaras} />
+                    </li>
+                </ul>
+            </div>
         </div>
     )
 };
