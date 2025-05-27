@@ -234,12 +234,13 @@
 }
 
 /* Медиа-запрос для мобильных устройств */
-@media (max-width: 700px) {
+@media (max-width: 768px) {
   .leftWrapper {
-    display: none; /* Скрываем левую часть */
+    width: 0;
   }
 
   .rightWrapper {
+    width: 100%;
     margin-top: 100px;
     width: 100%;
     padding: 20px; /* Уменьшаем padding для мобильных */

@@ -13,6 +13,7 @@ import Services from '@pages/servicesPage.jsx';
 import RefreshPassword from '@pages/RefreshPassword/RefreshPassword.jsx';
 import { store } from '../src/store/store.js'; // Импорт store из настроенного файла
 
+
 import '@styles/global.css';
 import '@styles/variables.css';
 

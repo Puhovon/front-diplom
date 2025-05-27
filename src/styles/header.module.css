@@ -145,7 +145,51 @@
 .mobileMenu.open {
     right: 0;
 }
+.userProfile {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
 
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.userName {
+  font-size: 16px;
+  color: #333;
+}
+
+.logoutButton {
+  background: none;
+  border: none;
+  color: #007bff;
+  cursor: pointer;
+  padding: 5px 10px;
+  font-size: 14px;
+}
+
+.mobileUserName {
+  display: block;
+  padding: 10px;
+  font-size: 16px;
+  color: #333;
+}
+
+.mobileLogoutButton {
+  display: block;
+  padding: 10px;
+  background: none;
+  border: none;
+  color: #007bff;
+  cursor: pointer;
+  font-size: 14px;
+  width: 100%;
+  text-align: left;
+}
 .mobileNavList {
     list-style: none;
     padding: 60px 0;
