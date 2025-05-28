@@ -126,6 +126,111 @@
   text-decoration: underline;
 }
 
+/* Новые стили для секций */
+.sectionTitle {
+  font-size: 20px;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin: 24px 0 16px;
+}
+
+.divider {
+  margin: 24px 0;
+}
+
+/* Услуги */
+.servicesSection {
+  margin-top: 16px;
+}
+
+.servicesList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.serviceItem {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.serviceName {
+  font-size: 14px;
+  color: #1a1a1a;
+}
+
+.servicePrice {
+  font-size: 14px;
+  font-weight: 500;
+  color: #007bff;
+}
+
+/* Отзывы */
+.reviewsSection {
+  margin-top: 16px;
+}
+
+.reviewsList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.reviewItem {
+  padding: 12px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+}
+
+.reviewHeader {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.reviewAuthor {
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+}
+
+.reviewRating {
+  font-size: 12px;
+}
+
+.reviewText {
+  font-size: 14px;
+  color: #666;
+  margin: 0;
+}
+
+/* Документы */
+.documentsSection {
+  margin-top: 16px;
+}
+
+.documentsList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.documentItem {
+  padding: 8px 0;
+}
+
+.documentLink {
+  font-size: 14px;
+  color: #007bff;
+  text-decoration: none;
+}
+
+.documentLink:hover {
+  text-decoration: underline;
+}
+
 /* Адаптивность */
 @media (max-width: 768px) {
   .profileCard {
@@ -154,6 +259,22 @@
     font-size: 14px;
   }
 
+  .sectionTitle {
+    font-size: 18px;
+  }
+
+  .serviceName,
+  .servicePrice,
+  .reviewAuthor,
+  .reviewText,
+  .documentLink {
+    font-size: 13px;
+  }
+
+  .reviewRating {
+    font-size: 11px;
+  }
+
   .loadingText {
     font-size: 16px;
   }
@@ -169,5 +290,36 @@
 
   .loginPrompt p {
     font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+  .profileContainer {
+    padding: 20px 10px;
+  }
+
+  .profileCard {
+    padding: 12px;
+  }
+
+  .title {
+    font-size: 20px;
+  }
+
+  .label,
+  .value {
+    font-size: 13px;
+  }
+
+  .sectionTitle {
+    font-size: 16px;
+  }
+
+  .serviceName,
+  .servicePrice,
+  .reviewAuthor,
+  .reviewText,
+  .documentLink {
+    font-size: 12px;
   }
 }

@@ -14,7 +14,7 @@ const Profile = () => {
   const [isTokenLoading, setIsTokenLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Проверяем, загружен ли токен
+  // Проверка токена
   useEffect(() => {
     const checkToken = async () => {
       try {
@@ -27,11 +27,10 @@ const Profile = () => {
         setIsTokenLoading(false);
       }
     };
-
     checkToken();
-  }, []);
+  }, [accessToken]);
 
-  // Загружаем данные профиля
+  // Загрузка данных профиля
   useEffect(() => {
     const fetchProfileData = async () => {
       if (isTokenLoading) return;
@@ -46,7 +45,6 @@ const Profile = () => {
 
       try {
         if (userId) {
-          console.log(`Загружаем данные пользователя с ID: ${userId}`);
           const headers = {
             'Content-Type': 'application/json',
           };
@@ -69,7 +67,6 @@ const Profile = () => {
           await getUserInfo();
         }
       } catch (error) {
-        console.error('Ошибка загрузки данных:', error);
         setError(error.message);
       } finally {
         setIsLoading(false);
@@ -77,9 +74,9 @@ const Profile = () => {
     };
 
     fetchProfileData();
-  }, [userId, accessToken, getUserInfo, user, navigate, isTokenLoading]);
+  }, [userId, accessToken, user, navigate, isTokenLoading]);
 
-  // Если токен еще загружается
+  // Отображение загрузки токена
   if (isTokenLoading) {
     return (
       <Fade in={true} timeout={500}>
@@ -91,7 +88,7 @@ const Profile = () => {
     );
   }
 
-  // Если это профиль текущего пользователя и токен отсутствует
+  // Требуется авторизация
   if (!userId && !accessToken) {
     return (
       <Fade in={true} timeout={500}>
@@ -107,7 +104,7 @@ const Profile = () => {
     );
   }
 
-  // Если данные профиля загружаются
+  // Отображение загрузки данных
   if (isLoading) {
     return (
       <Fade in={true} timeout={500}>
@@ -119,7 +116,7 @@ const Profile = () => {
     );
   }
 
-  // Если произошла ошибка
+  // Отображение ошибки
   if (error) {
     return (
       <Fade in={true} timeout={500}>
@@ -131,7 +128,7 @@ const Profile = () => {
     );
   }
 
-  // Если это профиль текущего пользователя и данные еще не загружены
+  // Данные пользователя еще не загружены
   if (!user && !userId) {
     return (
       <Fade in={true} timeout={500}>
@@ -143,7 +140,7 @@ const Profile = () => {
     );
   }
 
-  // Определяем, какие данные отображать
+  // Определяем данные для отображения
   const displayUser = userId ? profileData : user;
 
   if (!displayUser) {
@@ -163,7 +160,7 @@ const Profile = () => {
         <div className={styles.avatarSection}>
           <Avatar
             alt="Аватар пользователя"
-            src={displayUser.avatar || defaultAvatar}
+            src={displayUser.avatar_url || defaultAvatar}
             sx={{
               width: 150,
               height: 150,
@@ -177,13 +174,13 @@ const Profile = () => {
         </div>
         <div className={styles.infoSection}>
           <h1 className={styles.title}>
-            {userId ? `Профиль пользователя` : 'Ваш профиль'}
+            {userId ? `Профиль юриста` : 'Ваш профиль'}
             {userId && <span className={styles.userId}> (ID: {userId})</span>}
           </h1>
           <div className={styles.infoItem}>
             <span className={styles.label}>Имя:</span>
             <span className={styles.value}>
-              {displayUser.firstName || displayUser.name || 'Не указано'}
+              {`${displayUser.firstName || ''} ${displayUser.lastName || ''} ${displayUser.patronymic || ''}`.trim() || 'Не указано'}
             </span>
           </div>
           <div className={styles.infoItem}>
@@ -194,45 +191,51 @@ const Profile = () => {
             <span className={styles.label}>Роль:</span>
             <span className={styles.value}>{displayUser.role || 'Не указано'}</span>
           </div>
-          {displayUser.role === 'Юрист' && (
+          {displayUser.role === 'lawyer' && displayUser.LawyerProfile && (
             <>
               <div className={styles.infoItem}>
                 <span className={styles.label}>Специализация:</span>
                 <span className={styles.value}>
-                  {displayUser.specialization?.length > 0
-                    ? displayUser.specialization.join(', ')
+                  {displayUser.LawyerProfile.Specializations?.length > 0
+                    ? displayUser.LawyerProfile.Specializations.join(', ')
                     : 'Не указана'}
                 </span>
               </div>
               <div className={styles.infoItem}>
-                <span className={styles.label}>Город:</span>
-                <span className={styles.value}>{displayUser.city || 'Не указано'}</span>
+                <span className={styles.label}>Регион:</span>
+                <span className={styles.value}>{displayUser.LawyerProfile.region || 'Не указано'}</span>
               </div>
               <div className={styles.infoItem}>
-                <span className={styles.label}>Рейтинг:</span>
-                <span className={`${styles.value} ${styles.rating}`}>
-                  {displayUser.rating || 'N/A'}
-                </span>
+                <span className={styles.label}>Образование:</span>
+                <span className={styles.value}>{displayUser.LawyerProfile.education || 'Не указано'}</span>
               </div>
               <div className={styles.infoItem}>
                 <span className={styles.label}>Цена за консультацию:</span>
                 <span className={styles.value}>
-                  {displayUser.price ? `${displayUser.price} ₽` : 'Не указана'}
+                  {displayUser.LawyerProfile.price ? `${displayUser.LawyerProfile.price} ₽` : 'Не указана'}
                 </span>
               </div>
+              <div className={styles.infoItem}>
+                <span className={styles.label}>Опыт с:</span>
+                <span className={styles.value}>
+                  {displayUser.LawyerProfile.experienceStartDate
+                    ? new Date(displayUser.LawyerProfile.experienceStartDate).toLocaleDateString('ru-RU')
+                    : 'Не указано'}
+                </span>
+              </div>
+              <div className={styles.infoItem}>
+                <span className={styles.label}>Статус профиля:</span>
+                <span className={styles.value}>
+                  {displayUser.LawyerProfile.isConfirmed ? 'Подтверждён' : 'Не подтверждён'}
+                </span>
+              </div>
+              {displayUser.LawyerProfile.aboutMe && (
+                <div className={styles.infoItem}>
+                  <span className={styles.label}>О себе:</span>
+                  <p className={styles.bio}>{displayUser.LawyerProfile.aboutMe}</p>
+                </div>
+              )}
             </>
-          )}
-          {displayUser.bio && (
-            <div className={styles.infoItem}>
-              <span className={styles.label}>О себе:</span>
-              <p className={styles.bio}>{displayUser.bio}</p>
-            </div>
-          )}
-          {displayUser.phone && (
-            <div className={styles.infoItem}>
-              <span className={styles.label}>Телефон:</span>
-              <span className={styles.value}>{displayUser.phone}</span>
-            </div>
           )}
           {!accessToken && (
             <div className={styles.loginPrompt}>

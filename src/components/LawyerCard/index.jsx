@@ -1,36 +1,47 @@
 import { Link } from 'react-router-dom';
 import styles from './style.module.css';
-import defaultAvatar from '@assets/icons/default-avatar.png'; 
+import defaultAvatar from '../../assets/icons/default-avatar.png';
+// import StarIcon from '../../assets/icons/star.svg';
 
 const LawyerCard = ({ id, name, specialization, city, photo, rating }) => {
   return (
-    <div className={styles.listItem}>
-      <div className={styles.avatar}>
+    <div className={styles.card}>
+      <div className={styles.avatarContainer}>
         <img
-          src={photo || defaultAvatar}
-          alt={`${name}'s avatar`}
+          src={defaultAvatar}
+          alt={`Аватар ${name}`}
           className={styles.avatarImage}
+          loading="lazy"
         />
       </div>
-      <div className={styles.info}>
-        <h3 className={styles.nameUser}>
+      <div className={styles.infoContainer}>
+        <h3 className={styles.name}>
           {name}
-          <span className={styles.rating}>{rating || 'N/A'}</span>
+          {rating !== null && rating !== undefined ? (
+            <span className={styles.rating}>
+              {/* <img src={StarIcon} alt="Звезда рейтинга" className={styles.starIcon} /> */}
+              {rating.toFixed(1)}
+            </span>
+          ) : (
+            <span className={styles.rating}>Без рейтинга</span>
+          )}
         </h3>
-        <p className={styles.otherInfo}>
-          Специализация: <span>{specialization || 'Не указано'}</span>
+        <p className={styles.info}>
+          <span className={styles.label}>Специализация:</span>{' '}
+          <span className={styles.labelBold}>{specialization || 'Не указано'}</span>
         </p>
-        <p className={styles.otherInfo}>
-          Город: <span>{city || 'Не указано'}</span>
+        <p className={styles.info}>
+          <span className={styles.label}>Город:</span> <span className={styles.labelBold}>{city || 'Не указано'}</span>
         </p>
-      </div>
-      <div className={styles.userProfile}>
-        <Link to={`/profile/${id}`}>
+        <div className={styles.actionContainer}>
+        <Link to={`/profile/${id}`} className={styles.profileLink}>
           <button type="button" className={styles.profileButton}>
-            Профиль
+            Посмотреть профиль
           </button>
         </Link>
       </div>
+      </div>
+    
     </div>
   );
 };

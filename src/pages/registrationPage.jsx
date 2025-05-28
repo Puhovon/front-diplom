@@ -495,7 +495,7 @@ const Registration = () => {
                                         <button onClick={prevStep} type="button" className={styles.changePointBtn}>
                                             Назад
                                         </button>
-                                        <button onClick={nextStep} type="button" className={`${styles.changePointBtn} ${styles.submitButton}`}>
+                                        <button type="submit" className={`${styles.changePointBtn} ${styles.submitButton}`}>
                                             Зарегистрироваться
                                         </button>
                                     </div>
@@ -505,7 +505,7 @@ const Registration = () => {
                                 <>
                                     <h2>Регистрация завершена успешно</h2>
                                     <div className={styles.buttons}>
-                                        <Link to="/" type="submit" className={`${styles.changePointBtn} ${styles.submitButton}`}>
+                                        <Link to="/" className={`${styles.changePointBtn} ${styles.submitButton}`}>
                                             На главную
                                         </Link>
                                     </div>

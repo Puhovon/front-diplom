@@ -4,16 +4,16 @@ import Input from '@components/Input/index.jsx';
 import LawyerCard from '@components/LawyerCard/index.jsx';
 import useAuth from '@hooks/useAuth';
 import Slider from '@mui/material/Slider';
-import Autocomplete from '@mui/material/Autocomplete'; 
-import TextField from '@mui/material/TextField'; 
-import scope from '@assets/icons/scope.svg'
+import Autocomplete from '@mui/material/Autocomplete';
+import TextField from '@mui/material/TextField';
+import scope from '@assets/icons/scope.svg';
 
 const Lawyers = () => {
   const { accessToken } = useAuth();
   const [lawyers, setLawyers] = useState([]);
   const [filteredLawyers, setFilteredLawyers] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [specializations, setSpecializations] = useState([]); 
+  const [specializations, setSpecializations] = useState([]);
   const [priceRange, setPriceRange] = useState([0, 10000]);
   const [ratingRange, setRatingRange] = useState([0, 5]);
 
@@ -28,7 +28,7 @@ const Lawyers = () => {
   useEffect(() => {
     const fetchLawyers = async () => {
       try {
-        const response = await fetch('http://localhost:3000/api/v1/users/lawyers', {
+        const response = await fetch('http://localhost:3000/api/v1/lawyers', {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${accessToken}`,
@@ -36,9 +36,19 @@ const Lawyers = () => {
           },
         });
         if (!response.ok) throw new Error('Failed to fetch lawyers');
-        const data = await response.json();
-        setLawyers(data);
-        setFilteredLawyers(data);
+        const { data } = await response.json();
+        // Transform API data to match expected format
+        const transformedLawyers = data.map(lawyer => ({
+          id: lawyer.id,
+          name: `${lawyer.firstName} ${lawyer.lastName} ${lawyer.patronymic || ''}`.trim(),
+          specialization: lawyer.LawyerProfile?.aboutMe || availableSpecializations[0], // Fallback to first specialization if none provided
+          city: lawyer.LawyerProfile?.region || 'Unknown',
+          avatar: lawyer.avatar_url || '/default-avatar.png',
+          rating: 0, // Rating not provided in API response, using 0 as default
+          price: lawyer.LawyerProfile?.price || 0,
+        }));
+        setLawyers(transformedLawyers);
+        setFilteredLawyers(transformedLawyers);
       } catch (error) {
         console.error('Error fetching lawyers:', error);
       }
@@ -48,6 +58,10 @@ const Lawyers = () => {
       fetchLawyers();
     }
   }, [accessToken]);
+
+  useEffect(() => {
+    applyFilters();
+  }, [searchQuery, specializations, priceRange, ratingRange, lawyers]);
 
   const applyFilters = () => {
     let filtered = [...lawyers];
