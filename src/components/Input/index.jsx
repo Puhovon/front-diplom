@@ -1,7 +1,14 @@
 import { useState } from 'react';
-import styles from './styles.module.css';
-import closedEye from '@assets/mystic_eye_password_keeper_closed.svg';
-import openedEye from '@assets/mystic_eye_password_keeper_opened.svg';
+import {
+  FormControl,
+  InputLabel,
+  OutlinedInput,
+  InputAdornment,
+  IconButton,
+  FormHelperText,
+  TextField
+} from '@mui/material';
+// import { Visibility, VisibilityOff } from '@mui/icons-material';
 
 const InputWithLabel = ({
   id,
@@ -12,42 +19,85 @@ const InputWithLabel = ({
 }) => {
   const [showPassword, setShowPassword] = useState(false);
 
+  const handleClickShowPassword = () => {
+    setShowPassword(!showPassword);
+  };
+
+  const handleMouseDownPassword = (event) => {
+    event.preventDefault();
+  };
+
+  // Специальные пропсы для поля типа date
+  const getDateInputProps = () => {
+    if (type === 'date') {
+      return {
+        InputLabelProps: {
+          shrink: true,
+        },
+        inputProps: {
+          style: {
+            color: 'transparent',
+          },
+          onFocus: (e) => {
+            e.target.style.color = 'inherit';
+            if (!e.target.value) {
+              e.target.value = '';
+            }
+          },
+          onBlur: (e) => {
+            if (!e.target.value) {
+              e.target.style.color = 'transparent';
+            }
+          }
+        }
+      };
+    }
+    return {};
+  };
+
   // Определяем реальный тип инпута
   const inputType = type === 'password' && showPassword ? 'text' : type;
 
   return (
-    <div className={styles.inputGroup}>
-      <label htmlFor={id} className={styles.label}>
-        {label}
-      </label>
-
-      <div className={styles.inputWrapper}>
-        <input
+    <FormControl variant="outlined" fullWidth error={Boolean(error)}>
+      {type === 'password' ? (
+        <>
+          <InputLabel htmlFor={id}>{label}</InputLabel>
+          <OutlinedInput
+            id={id}
+            type={inputType}
+            endAdornment={
+              <InputAdornment position="end">
+                <IconButton
+                  aria-label="toggle password visibility"
+                  onClick={handleClickShowPassword}
+                  onMouseDown={handleMouseDownPassword}
+                  edge="end"
+                >
+                  {/* {showPassword ? <VisibilityOff /> : <Visibility />} */}
+                </IconButton>
+              </InputAdornment>
+            }
+            label={label}
+            {...inputProps}
+          />
+        </>
+      ) : (
+        <TextField
           id={id}
-          type={inputType}
-          className={`${styles.inputField} ${error ? styles.error : ''}`}
-          aria-describedby={error ? `${id}-error` : undefined}
+          label={label}
+          type={type}
+          variant="outlined"
           {...inputProps}
+          {...getDateInputProps()}
+          error={Boolean(error)}
+          helperText={error}
         />
-
-        {type === 'password' && (
-          <button
-            type="button"
-            className={styles.toggleButton}
-            onClick={() => setShowPassword(!showPassword)}
-            aria-label={showPassword ? 'Скрыть пароль' : 'Показать пароль'}
-          >
-            <img className={styles.img} src={showPassword ? closedEye : openedEye} alt="скрыть/показать пароль" />
-          </button>
-        )}
-      </div>
-
-      {error && (
-        <div id={`${id}-error`} className={styles.errorMessage}>
-          {error}
-        </div>
       )}
-    </div>
+      {type === 'password' && error && (
+        <FormHelperText error>{error}</FormHelperText>
+      )}
+    </FormControl>
   );
 };
 

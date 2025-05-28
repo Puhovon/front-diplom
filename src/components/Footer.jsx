@@ -3,6 +3,7 @@ import logo from '@assets/icons/logo_white.png';
 import tg from '@assets/icons/tg.png';
 import wp from '@assets/icons/Wp.png';
 import styles from '@styles/footer.module.css';
+import Input from '@components/Input/index.jsx';
 
 const Footer = () => {
     return (
@@ -31,7 +32,7 @@ const Footer = () => {
                                 </Link>
                             </li>
                             <li className={styles.listItem}>
-                                <Link to="/team" title="Наша команда юристов" itemProp="url">
+                                <Link to="/team" title="Наша команда разработчиков" itemProp="url">
                                     Команда
                                 </Link>
                             </li>
@@ -96,11 +97,11 @@ const Footer = () => {
                     </div>
                     <div className={styles.column}>
                         <div className={styles.subscribe}>
-                            <input
+                            <Input
                                 type="email"
                                 placeholder="Введите электронную почту"
                                 className={styles.input}
-                                aria-label="Введите email для подписки"
+                                styles={{backgroundColor: '#fffff'}}
                             />
                             <button className={styles.button}>Подписаться</button>
                         </div>

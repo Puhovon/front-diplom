@@ -12,7 +12,7 @@ const HomePage = () => {
             <h1>Адвокат рядом — защита на расстоянии клика</h1>
             <p>Не ищите в офлайне — мы уже здесь</p>
           </div>
-          <Link to="/search" className={styles.button}>
+          <Link to="/lawyers" className={styles.button}>
             Найти Адвоката
             <img src={arrow} alt="Иконка стрелки" className={styles.image} />
           </Link>

@@ -1,14 +1,25 @@
 import { Link } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 import { useState, useEffect } from 'react';
 import styles from '@styles/registrationPage.module.css';
 import logo from '@assets/icons/logo_blue.png';
 import Input from '../components/Input/index.jsx';
+import Modal from '../components/ErrModal/index.jsx';
+import leftImage from '../../src/assets/reg-backg.png';
+import { setUserType, setStep, setUser } from '../store/registrationSlice.js';
+import { FormControl, FormLabel, RadioGroup, FormControlLabel, Radio } from '@mui/material';
 
 const Registration = () => {
-    const [userType, setUserType] = useState('client');
-    const [step, setStep] = useState(1);
+    const dispatch = useDispatch();
+    const { userType, step } = useSelector((state) => state.registration);
+
+    // Локальное состояние для формы, ошибок и модального окна
     const [formData, setFormData] = useState({
         name: '',
+        surname: '',
+        patronymic: '',
+        gender: 'male',
+        birthDate: '',
         mail: '',
         pass: '',
         passRepeat: '',
@@ -19,61 +30,222 @@ const Registration = () => {
         license: '',
     });
     const [errors, setErrors] = useState({});
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     useEffect(() => {
         if (step < 1 || step > 3) {
-            setStep(1);
+            dispatch(setStep(1));
         }
-    }, [step]);
+    }, [step, dispatch]);
 
     const handleUserTypeChange = (type) => {
-        setUserType(type);
-        setStep(1); // Сброс шага при смене типа пользователя
+        dispatch(setUserType(type));
+        setFormData({
+            name: '',
+            surname: '',
+            patronymic: '',
+            gender: 'male',
+            birthDate: '',
+            mail: '',
+            pass: '',
+            passRepeat: '',
+            specialization: '',
+            job: '',
+            education: '',
+            region: '',
+            license: '',
+        });
+        setErrors({});
+        setIsModalOpen(false);
+    };
+
+    const validateForm = () => {
+        const newErrors = {};
+
+        if (step === 1 || userType === 'client') {
+            // Проверка email
+            if (!formData.mail.trim()) {
+                newErrors.mail = 'Почта обязательна';
+            } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.mail)) {
+                newErrors.mail = 'Некорректный email';
+            }
+
+            // Проверка пароля
+            if (!formData.pass) {
+                newErrors.pass = 'Пароль обязателен';
+            } else if (formData.pass.length < 8 || formData.pass.length > 32) {
+                newErrors.pass = 'Пароль должен быть от 8 до 32 символов';
+            } else if (!/\d/.test(formData.pass)) {
+                newErrors.pass = 'Пароль должен содержать цифру';
+            } else if (!/[A-Z]/.test(formData.pass)) {
+                newErrors.pass = 'Пароль должен содержать заглавную букву';
+            }
+
+            // Проверка повторного пароля
+            if (!formData.passRepeat) {
+                newErrors.passRepeat = 'Повторите пароль';
+            } else if (formData.pass !== formData.passRepeat) {
+                newErrors.passRepeat = 'Пароли не совпадают';
+            }
+
+            // Проверка имени
+            if (!formData.name.trim()) {
+                newErrors.name = 'Имя обязательно';
+            } else if (formData.name.length < 2) {
+                newErrors.name = 'Имя слишком короткое';
+            }
+
+            // Проверка фамилии
+            if (!formData.surname.trim()) {
+                newErrors.surname = 'Фамилия обязательна';
+            } else if (formData.surname.length < 2) {
+                newErrors.surname = 'Фамилия слишком короткая';
+            }
+
+            // Проверка отчества
+            if (formData.patronymic && formData.patronymic.trim().length < 2) {
+                newErrors.patronymic = 'Отчество слишком короткое';
+            }
+
+           
+            if (!formData.birthDate) {
+                newErrors.birthDate = 'Дата рождения обязательна';
+            } else {
+                const birthDate = new Date(formData.birthDate);
+                const today = new Date('2025-05-27T16:21:00Z'); 
+                const minAgeDate = new Date(today);
+                minAgeDate.setFullYear(minAgeDate.getFullYear() - 18);
+                if (isNaN(birthDate.getTime())) {
+                    newErrors.birthDate = 'Неверный формат даты';
+                } else if (birthDate > today) {
+                    newErrors.birthDate = 'Дата рождения не может быть в будущем';
+                } else if (birthDate > minAgeDate) {
+                    newErrors.birthDate = 'Пользователь должен быть старше 18 лет';
+                }
+            }
+
+            
+            if (!formData.gender) {
+                newErrors.gender = 'Пол обязателен';
+            } else if (!['male', 'female'].includes(formData.gender.toLowerCase())) {
+                newErrors.gender = 'Неверное значение пола';
+            }
+        }
+
+        if (userType === 'provider' && step === 2) {
+            if (!formData.specialization.trim()) {
+                newErrors.specialization = 'Укажите специализацию';
+            } else if (formData.specialization.length < 3) {
+                newErrors.specialization = 'Специализация должна содержать минимум 3 символа';
+            }
+
+            if (!formData.region.trim()) {
+                newErrors.region = 'Укажите регион';
+            } else if (formData.region.length < 2) {
+                newErrors.region = 'Регион должен содержать минимум 2 символа';
+            }
+        }
+
+        setErrors(newErrors);
+        setIsModalOpen(Object.keys(newErrors).length > 0);
+        return Object.keys(newErrors).length === 0;
     };
 
     const nextStep = (e) => {
         e.preventDefault();
-        setStep((prevStep) => prevStep + 1);
+        if (validateForm()) {
+            dispatch(setStep(step + 1));
+            setIsModalOpen(false);
+        }
     };
 
     const prevStep = (e) => {
         e.preventDefault();
-        setStep((prevStep) => prevStep - 1);
+        dispatch(setStep(step - 1));
+        setIsModalOpen(false);
     };
 
     const handleInputChange = (e) => {
         const { id, value } = e.target;
         setFormData((prev) => ({ ...prev, [id]: value }));
+        setErrors((prev) => ({ ...prev, [id]: '' }));
     };
 
-    const validateForm = () => {
-        const newErrors = {};
-        if (!formData.name) newErrors.name = 'Имя обязательно';
-        if (!formData.mail || !/\S+@\S+\.\S+/.test(formData.mail)) newErrors.mail = 'Некорректная почта';
-        if (!formData.pass) newErrors.pass = 'Пароль обязателен';
-        if (formData.pass !== formData.passRepeat) newErrors.passRepeat = 'Пароли не совпадают';
-        if (userType === 'provider' && step === 2) {
-            if (!formData.specialization) newErrors.specialization = 'Укажите специализацию';
-            if (!formData.region) newErrors.region = 'Укажите регион';
-        }
-        setErrors(newErrors);
-        return Object.keys(newErrors).length === 0;
+    const handleGenderChange = (e) => {
+        setFormData((prev) => ({ ...prev, gender: e.target.value }));
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         if (validateForm()) {
-            console.log('Form submitted:', formData);
-            // Логика отправки данных через API
+            const userData = {
+                userType,
+                firstName: formData.name,
+                lastName: formData.surname,
+                patronymic: formData.patronymic,
+                gender: formData.gender,
+                birthDate: formData.birthDate,
+                email: formData.mail,
+                password: formData.pass,
+                specialization: formData.specialization,
+                experienceStartDate: formData.job,
+                education: formData.education,
+                region: formData.region,
+                licenseNumber: formData.license,
+                registrationDate: new Date().toISOString(), // 09:21 AM PDT, 27 мая 2025
+            };
+            try {
+                const response = await fetch(`http://localhost:3000/api/v1/auth/register${userType === 'client' ? 'Client' : 'Lawyer'}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(userData),
+                });
+                console.log(JSON.stringify(userData))
+                if (!response.ok) {
+                    throw new Error('Ошибка при отправке данных на сервер');
+                }
+
+                const result = await response.json();
+                dispatch(setUser(userData));
+                setFormData({
+                    name: '',
+                    surname: '',
+                    patronymic: '',
+                    gender: 'male',
+                    birthDate: '',
+                    mail: '',
+                    pass: '',
+                    passRepeat: '',
+                    specialization: '',
+                    job: '',
+                    education: '',
+                    region: '',
+                    license: '',
+                });
+                setErrors({});
+                setIsModalOpen(false);
+            } catch (error) {
+                console.error('Ошибка:', error.message);
+                setErrors({ server: 'Ошибка отправки данных на сервер' });
+                setIsModalOpen(true);
+            }
         }
+    };
+
+    const closeModal = () => {
+        setIsModalOpen(false);
     };
 
     return (
         <div className={styles.registration}>
-            <Link className={styles.logo} to='/'>
+            <Link className={styles.logo} to="/">
                 <img src={logo} alt="Назад" />
             </Link>
-            <div className={styles.leftWrapper} />
+            <div className={styles.leftWrapper}>
+                <img src={leftImage} alt="leftImage" />
+            </div>
             <div className={styles.rightWrapper}>
                 <h2>Регистрация</h2>
                 <div className={styles.сhangeForm}>
@@ -94,42 +266,82 @@ const Registration = () => {
                     {userType === 'client' && (
                         <>
                             <Input
-                                id='name'
-                                label='Имя'
-                                type='text'
+                                id="name"
+                                label="Имя"
+                                type="text"
                                 value={formData.name}
                                 onChange={handleInputChange}
                                 error={errors.name}
-                                placeholder='Введите имя'
+                                placeholder="Введите имя"
                             />
                             <Input
-                                id='mail'
-                                label='Почта'
-                                type='email'
+                                id="surname"
+                                label="Фамилия"
+                                type="text"
+                                value={formData.surname}
+                                onChange={handleInputChange}
+                                error={errors.surname}
+                                placeholder="Введите фамилию"
+                            />
+                            <Input
+                                id="patronymic"
+                                label="Отчество"
+                                type="text"
+                                value={formData.patronymic}
+                                onChange={handleInputChange}
+                                error={errors.patronymic}
+                                placeholder="Введите отчество"
+                            />
+                            <Input
+                                id="birthDate"
+                                label="Дата рождения"
+                                type="date"
+                                value={formData.birthDate}
+                                onChange={handleInputChange}
+                                error={errors.birthDate}
+                            />
+                            <Input
+                                id="mail"
+                                label="Почта"
+                                type="email"
                                 value={formData.mail}
                                 onChange={handleInputChange}
                                 error={errors.mail}
-                                placeholder='Введите электронную почту'
+                                placeholder="Введите электронную почту"
                             />
                             <Input
-                                id='pass'
-                                label='Пароль'
-                                type='password'
+                                id="pass"
+                                label="Пароль"
+                                type="password"
                                 value={formData.pass}
                                 onChange={handleInputChange}
                                 error={errors.pass}
-                                placeholder='Введите пароль'
+                                placeholder="Введите пароль (8-32 символа, цифра, заглавная)"
                             />
                             <Input
-                                id='passRepeat'
-                                label='Повторите пароль'
-                                type='password'
+                                id="passRepeat"
+                                label="Повторите пароль"
+                                type="password"
                                 value={formData.passRepeat}
                                 onChange={handleInputChange}
                                 error={errors.passRepeat}
-                                placeholder='Введите пароль'
+                                placeholder="Повторите пароль"
                             />
-                            <button type='submit' className={styles.submitButton}>
+                            <FormControl component="fieldset" className={styles.genderSelector}>
+                                <FormLabel component="legend">Пол</FormLabel>
+                                <RadioGroup
+                                    row
+                                    aria-label="gender"
+                                    name="gender"
+                                    value={formData.gender}
+                                    onChange={handleGenderChange}
+                                >
+                                    <FormControlLabel value="male" control={<Radio />} label="Мужской" />
+                                    <FormControlLabel value="female" control={<Radio />} label="Женский" />
+                                </RadioGroup>
+                                {errors.gender && <p className={styles.error}>{errors.gender}</p>}
+                            </FormControl>
+                            <button type="submit" className={styles.submitButton}>
                                 Зарегистрироваться
                             </button>
                         </>
@@ -138,9 +350,7 @@ const Registration = () => {
                         <>
                             <div className={styles.stepsContainer}>
                                 <div className={styles.steps}>
-                                    Шаг {step}: {step === 1 ? 'Основные данные'
-                                        : step === 2 ? 'Профессиональная информация'
-                                            : 'Загрузка файлов'}
+                                    Шаг {step}: {step === 1 ? 'Основные данные' : step === 2 ? 'Профессиональная информация' : 'Завершение'}
                                 </div>
                                 <div className={styles.stepPoints}>
                                     {[1, 2, 3].map((point) => (
@@ -154,42 +364,82 @@ const Registration = () => {
                             {step === 1 && (
                                 <>
                                     <Input
-                                        id='name'
-                                        label='Имя'
-                                        type='text'
+                                        id="name"
+                                        label="Имя"
+                                        type="text"
                                         value={formData.name}
                                         onChange={handleInputChange}
                                         error={errors.name}
-                                        placeholder='Введите имя'
+                                        placeholder="Введите имя"
                                     />
                                     <Input
-                                        id='mail'
-                                        label='Почта'
-                                        type='email'
+                                        id="surname"
+                                        label="Фамилия"
+                                        type="text"
+                                        value={formData.surname}
+                                        onChange={handleInputChange}
+                                        error={errors.surname}
+                                        placeholder="Введите фамилию"
+                                    />
+                                    <Input
+                                        id="patronymic"
+                                        label="Отчество (если есть)"
+                                        type="text"
+                                        value={formData.patronymic}
+                                        onChange={handleInputChange}
+                                        error={errors.patronymic}
+                                        placeholder="Введите отчество"
+                                    />
+                                    <Input
+                                        id="birthDate"
+                                        label="Дата рождения"
+                                        type="date"
+                                        value={formData.birthDate}
+                                        onChange={handleInputChange}
+                                        error={errors.birthDate}
+                                    />
+                                    <Input
+                                        id="mail"
+                                        label="Почта"
+                                        type="email"
                                         value={formData.mail}
                                         onChange={handleInputChange}
                                         error={errors.mail}
-                                        placeholder='Введите электронную почту'
+                                        placeholder="Введите электронную почту"
                                     />
                                     <Input
-                                        id='pass'
-                                        label='Пароль'
-                                        type='password'
+                                        id="pass"
+                                        label="Пароль"
+                                        type="password"
                                         value={formData.pass}
                                         onChange={handleInputChange}
                                         error={errors.pass}
-                                        placeholder='Введите пароль'
+                                        placeholder="Введите пароль (8-32 символа, цифра, заглавная)"
                                     />
                                     <Input
-                                        id='passRepeat'
-                                        label='Повторите пароль'
-                                        type='password'
+                                        id="passRepeat"
+                                        label="Повторите пароль"
+                                        type="password"
                                         value={formData.passRepeat}
                                         onChange={handleInputChange}
                                         error={errors.passRepeat}
-                                        placeholder='Введите пароль'
+                                        placeholder="Повторите пароль"
                                     />
-                                    <button onClick={nextStep} type='button' className={styles.submitButton}>
+                                    <FormControl component="fieldset" className={styles.genderSelector}>
+                                        <FormLabel component="legend">Пол</FormLabel>
+                                        <RadioGroup
+                                            row
+                                            aria-label="gender"
+                                            name="gender"
+                                            value={formData.gender}
+                                            onChange={handleGenderChange}
+                                        >
+                                            <FormControlLabel value="male" control={<Radio />} label="Мужской" />
+                                            <FormControlLabel value="female" control={<Radio />} label="Женский" />
+                                        </RadioGroup>
+                                        {errors.gender && <p className={styles.error}>{errors.gender}</p>}
+                                    </FormControl>
+                                    <button onClick={nextStep} type="button" className={styles.submitButton}>
                                         Далее
                                     </button>
                                 </>
@@ -197,76 +447,67 @@ const Registration = () => {
                             {step === 2 && (
                                 <>
                                     <Input
-                                        id='specialization'
-                                        label='Специализация'
-                                        type='text'
+                                        id="specialization"
+                                        label="Специализация"
+                                        type="text"
                                         value={formData.specialization}
                                         onChange={handleInputChange}
                                         error={errors.specialization}
-                                        placeholder='Например уголовное право'
+                                        placeholder="Например уголовное право"
                                     />
                                     <Input
-                                        id='job'
-                                        label='Опыт работы'
-                                        type='text'
+                                        id="job"
+                                        label="Опыт работы"
+                                        type="text"
                                         value={formData.job}
                                         onChange={handleInputChange}
                                         error={errors.job}
-                                        placeholder='Например 5 лет'
+                                        placeholder="Например 5 лет"
                                     />
                                     <Input
-                                        id='education'
-                                        label='Образование'
-                                        type='text'
+                                        id="education"
+                                        label="Образование"
+                                        type="text"
                                         value={formData.education}
                                         onChange={handleInputChange}
                                         error={errors.education}
-                                        placeholder='Например МГУ'
+                                        placeholder="Например МГУ"
                                     />
                                     <Input
-                                        id='region'
-                                        label='Регион работы'
-                                        type='text'
+                                        id="region"
+                                        label="Регион работы"
+                                        type="text"
                                         value={formData.region}
                                         onChange={handleInputChange}
                                         error={errors.region}
-                                        placeholder='Москва'
+                                        placeholder="Москва"
                                     />
                                     <Input
-                                        id='license'
-                                        label='Номер лицензии'
-                                        type='text'
+                                        id="license"
+                                        label="Номер лицензии"
+                                        type="text"
                                         value={formData.license}
                                         onChange={handleInputChange}
                                         error={errors.license}
-                                        placeholder='Номер лицензии'
+                                        placeholder="Номер лицензии"
                                     />
                                     <div className={styles.buttons}>
-                                        <button onClick={prevStep} type='button' className={styles.changePointBtn}>
+                                        <button onClick={prevStep} type="button" className={styles.changePointBtn}>
                                             Назад
                                         </button>
-                                        <button onClick={nextStep} type='button' className={`${styles.changePointBtn} ${styles.submitButton}`}>
-                                            Далее
+                                        <button onClick={nextStep} type="button" className={`${styles.changePointBtn} ${styles.submitButton}`}>
+                                            Зарегистрироваться
                                         </button>
                                     </div>
                                 </>
                             )}
                             {step === 3 && (
                                 <>
-                                    <Input
-                                        id='files'
-                                        label='Загрузка файлов'
-                                        type='file'
-                                        error={errors.files}
-                                        multiple
-                                    />
+                                    <h2>Регистрация завершена успешно</h2>
                                     <div className={styles.buttons}>
-                                        <button onClick={prevStep} type='button' className={styles.changePointBtn}>
-                                            Назад
-                                        </button>
-                                        <button type='submit' className={`${styles.changePointBtn} ${styles.submitButton}`}>
-                                            Зарегистрироваться
-                                        </button>
+                                        <Link to="/" type="submit" className={`${styles.changePointBtn} ${styles.submitButton}`}>
+                                            На главную
+                                        </Link>
                                     </div>
                                 </>
                             )}
@@ -275,8 +516,11 @@ const Registration = () => {
                 </form>
                 <div className={styles.loginLinkContainer}>
                     <p className={styles.text}>Уже есть аккаунт?</p>
-                    <Link to='/login' className={styles.link}>Войти</Link>
+                    <Link to="/login" className={styles.link}>
+                        Войти
+                    </Link>
                 </div>
+                <Modal isOpen={isModalOpen} errors={errors} onClose={closeModal} />
             </div>
         </div>
     );

@@ -38,3 +38,7 @@
 .label {
   font-weight: bold;
 }
+.errorMessage{
+  color: var(--red-400);
+  font-weight: bold;
+}
