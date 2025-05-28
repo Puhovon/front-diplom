@@ -4,7 +4,10 @@ import useAuth from '@hooks/useAuth';
 
 import logo from '@assets/icons/logo_blue.png';
 import styles from '@styles/header.module.css';
-import defaultAvatar from '@assets/pidaras.jpg';
+import defaultAvatar from '@assets/icons/default-avatar.png';
+import strel from '@assets/icons/strel.png';
+import profile from '@assets/icons/iconamoon_profile-fill.png';
+import exit from '@assets/icons/iconamoon_exit-bold.png';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -49,103 +52,166 @@ const Header = () => {
         {user && accessToken ? (
           <div className={styles.userProfile}>
             {authError && <span className={styles.authError}>{authError}</span>}
-            <img
-              src={user.avatar || defaultAvatar}
-              alt="User Avatar"
-              className={styles.avatar}
-            />
-            <span className={styles.userName}>{user.email.split('@')[0]}</span>
-            <button onClick={handleLogout} className={styles.logoutButton}>
-              Выход
-            </button>
+            <div className={styles.dropdown}>
+              <div className={styles.userProfile}>
+                <img
+                  src={user.avatar || defaultAvatar}
+                  alt="User Avatar"
+                  className={styles.avatar}
+                />
+                <span className={styles.userName}>{user.role}</span>
+                <img src={strel} alt="Вниз" />
+              </div>
+              <div className={styles.dropdownContent}>
+                <Link tp="/profile" className={styles.dropdownItem}> <img src={profile} alt="user" />Профиль</Link>
+                <button onClick={handleLogout} className={styles.dropdownItem}>
+                  <img src={exit} alt="exit" />
+                  Выход
+                </button>
+              </div>
+            </div>
+            <div className={styles.burgerMenu}>
+              <button
+                className={`${styles.burgerButton} ${isMenuOpen ? styles.active : ''}`}
+                onClick={toggleMenu}
+                aria-label="Toggle menu"
+                aria-expanded={isMenuOpen}
+              >
+                <span className={styles.burgerIcon}></span>
+                <span className={styles.burgerIcon}></span>
+                <span className={styles.burgerIcon}></span>
+              </button>
+              <div className={`${styles.mobileMenu} ${isMenuOpen ? styles.open : ''}`}>
+                <Link to="/" className={styles.logoLinkMobile} onClick={toggleMenu} aria-label="Homepage">
+                  <img src={logo} alt="Company Logo" className={styles.logo} />
+                  LawyerHub
+                </Link>
+                <div className={styles.closeMobileMenu} onClick={toggleMenu}>✖</div>
+                <ul className={styles.mobileNavList}>
+                  <li>
+                    <NavLink
+                      to="/"
+                      className={({ isActive }) => isActive ? `${styles.mobileNavLink} ${styles.active}` : styles.mobileNavLink}
+                      onClick={toggleMenu}
+                    >
+                      Главная
+                    </NavLink>
+                  </li>
+                  <li>
+                    <NavLink
+                      to="/services"
+                      className={({ isActive }) => isActive ? `${styles.mobileNavLink} ${styles.active}` : styles.mobileNavLink}
+                      onClick={toggleMenu}
+                    >
+                      Услуги
+                    </NavLink>
+                  </li>
+                  <li>
+                    <NavLink
+                      to="/lawyers"
+                      className={({ isActive }) => isActive ? `${styles.mobileNavLink} ${styles.active}` : styles.mobileNavLink}
+                      onClick={toggleMenu}
+                    >
+                      Юристы
+                    </NavLink>
+                  </li>
+                  <li>
+                    <NavLink
+                      to="/about"
+                      className={({ isActive }) => isActive ? `${styles.mobileNavLink} ${styles.active}` : styles.mobileNavLink}
+                      onClick={toggleMenu}
+                    >
+                      О нас
+                    </NavLink>
+                  </li>
+                  <li>
+                    <NavLink
+                      to="/contacts"
+                      className={({ isActive }) => isActive ? `${styles.mobileNavLink} ${styles.active}` : styles.mobileNavLink}
+                      onClick={toggleMenu}
+                    >
+                      Контакты
+                    </NavLink>
+                  </li>
+                </ul>
+              </div>
+            </div>
           </div>
         ) : (
-          <div className={styles.authButtons}>
-            {authError && <span className={styles.authError}>{authError}</span>}
-            <Link to="/login" className={styles.authButton}>
-              Вход
-            </Link>
-            <Link to="/registration" className={`${styles.authButton} ${styles.register}`}>
-              Регистрация
-            </Link>
-          </div>
-        )}
-        <div className={styles.burgerMenu}>
-          <button
-            className={`${styles.burgerButton} ${isMenuOpen ? styles.active : ''}`}
-            onClick={toggleMenu}
-            aria-label="Toggle menu"
-            aria-expanded={isMenuOpen}
-          >
-            <span className={styles.burgerIcon}></span>
-            <span className={styles.burgerIcon}></span>
-            <span className={styles.burgerIcon}></span>
-          </button>
-          <div className={`${styles.mobileMenu} ${isMenuOpen ? styles.open : ''}`}>
-            <Link to="/" className={styles.logoLinkMobile} onClick={toggleMenu} aria-label="Homepage">
-              <img src={logo} alt="Company Logo" className={styles.logo} />
-              LawyerHub
-            </Link>
-            <div className={styles.closeMobileMenu} onClick={toggleMenu}>✖</div>
-            <ul className={styles.mobileNavList}>
-              <li>
-                <NavLink
-                  to="/"
-                  className={({ isActive }) => isActive ? `${styles.mobileNavLink} ${styles.active}` : styles.mobileNavLink}
-                  onClick={toggleMenu}
-                >
-                  Главная
-                </NavLink>
-              </li>
-              <li>
-                <NavLink
-                  to="/services"
-                  className={({ isActive }) => isActive ? `${styles.mobileNavLink} ${styles.active}` : styles.mobileNavLink}
-                  onClick={toggleMenu}
-                >
-                  Услуги
-                </NavLink>
-              </li>
-              <li>
-                <NavLink
-                  to="/lawyers"
-                  className={({ isActive }) => isActive ? `${styles.mobileNavLink} ${styles.active}` : styles.mobileNavLink}
-                  onClick={toggleMenu}
-                >
-                  Юристы
-                </NavLink>
-              </li>
-              <li>
-                <NavLink
-                  to="/about"
-                  className={({ isActive }) => isActive ? `${styles.mobileNavLink} ${styles.active}` : styles.mobileNavLink}
-                  onClick={toggleMenu}
-                >
-                  О нас
-                </NavLink>
-              </li>
-              <li>
-                <NavLink
-                  to="/contacts"
-                  className={({ isActive }) => isActive ? `${styles.mobileNavLink} ${styles.active}` : styles.mobileNavLink}
-                  onClick={toggleMenu}
-                >
-                  Контакты
-                </NavLink>
-              </li>
-              {user && accessToken ? (
-                <>
+
+          <>
+            <div className={styles.authButtons}>
+              {authError && <span className={styles.authError}>{authError}</span>}
+              <Link to="/login" className={styles.authButton}>
+                Вход
+              </Link>
+              <Link to="/registration" className={`${styles.authButton} ${styles.register}`}>
+                Регистрация
+              </Link>
+            </div>
+            <div className={styles.burgerMenu}>
+              <button
+                className={`${styles.burgerButton} ${isMenuOpen ? styles.active : ''}`}
+                onClick={toggleMenu}
+                aria-label="Toggle menu"
+                aria-expanded={isMenuOpen}
+              >
+                <span className={styles.burgerIcon}></span>
+                <span className={styles.burgerIcon}></span>
+                <span className={styles.burgerIcon}></span>
+              </button>
+              <div className={`${styles.mobileMenu} ${isMenuOpen ? styles.open : ''}`}>
+                <Link to="/" className={styles.logoLinkMobile} onClick={toggleMenu} aria-label="Homepage">
+                  <img src={logo} alt="Company Logo" className={styles.logo} />
+                  LawyerHub
+                </Link>
+                <div className={styles.closeMobileMenu} onClick={toggleMenu}>✖</div>
+                <ul className={styles.mobileNavList}>
                   <li>
-                    <span className={styles.mobileUserName}>{user.email.split('@')[0]}</span>
+                    <NavLink
+                      to="/"
+                      className={({ isActive }) => isActive ? `${styles.mobileNavLink} ${styles.active}` : styles.mobileNavLink}
+                      onClick={toggleMenu}
+                    >
+                      Главная
+                    </NavLink>
                   </li>
                   <li>
-                    <button onClick={handleLogout} className={styles.mobileLogoutButton}>
-                      Выход
-                    </button>
+                    <NavLink
+                      to="/services"
+                      className={({ isActive }) => isActive ? `${styles.mobileNavLink} ${styles.active}` : styles.mobileNavLink}
+                      onClick={toggleMenu}
+                    >
+                      Услуги
+                    </NavLink>
                   </li>
-                </>
-              ) : (
-                <>
+                  <li>
+                    <NavLink
+                      to="/lawyers"
+                      className={({ isActive }) => isActive ? `${styles.mobileNavLink} ${styles.active}` : styles.mobileNavLink}
+                      onClick={toggleMenu}
+                    >
+                      Юристы
+                    </NavLink>
+                  </li>
+                  <li>
+                    <NavLink
+                      to="/about"
+                      className={({ isActive }) => isActive ? `${styles.mobileNavLink} ${styles.active}` : styles.mobileNavLink}
+                      onClick={toggleMenu}
+                    >
+                      О нас
+                    </NavLink>
+                  </li>
+                  <li>
+                    <NavLink
+                      to="/contacts"
+                      className={({ isActive }) => isActive ? `${styles.mobileNavLink} ${styles.active}` : styles.mobileNavLink}
+                      onClick={toggleMenu}
+                    >
+                      Контакты
+                    </NavLink>
+                  </li>
                   <li>
                     <NavLink
                       to="/login"
@@ -164,11 +230,11 @@ const Header = () => {
                       Регистрация
                     </NavLink>
                   </li>
-                </>
-              )}
-            </ul>
-          </div>
-        </div>
+                </ul>
+              </div>
+            </div>
+          </>
+        )}
       </div>
     </header>
   );
