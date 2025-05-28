@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import useAuth from '@hooks/useAuth';
+import { useDispatch } from 'react-redux';
+import { setUser } from '../store/registrationSlice';
 
 import logo from '@assets/icons/logo_blue.png';
 import styles from '@styles/header.module.css';
@@ -11,11 +13,94 @@ import exit from '@assets/icons/iconamoon_exit-bold.png';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { user, accessToken, handleLogout, authError } = useAuth();
+  const [isLoadingUser, setIsLoadingUser] = useState(false);
+  const [isTokenLoading, setIsTokenLoading] = useState(true); // Новое состояние для загрузки токена
+  const { user, accessToken, handleLogout, authError, getUserInfo } = useAuth();
+  const dispatch = useDispatch();
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
+
+  // Проверяем, загружен ли токен
+  useEffect(() => {
+    const checkToken = async () => {
+      try {
+        // Эмуляция проверки токена (замените на реальную логику из useAuth)
+        if (accessToken === undefined || accessToken === null) {
+          await new Promise((resolve) => setTimeout(resolve, 500)); // Имитация асинхронной загрузки
+        }
+      } catch (err) {
+        console.error('Ошибка проверки токена:', err);
+      } finally {
+        setIsTokenLoading(false);
+      }
+    };
+
+    checkToken();
+  }, []);
+
+  const fetchUser = async () => {
+    if (!accessToken) return;
+
+    setIsLoadingUser(true);
+    try {
+      const startTime = Date.now();
+      const userData = await getUserInfo();
+      if (userData) {
+        dispatch(setUser(userData));
+      }
+      const elapsed = Date.now() - startTime;
+      if (elapsed < 1000) {
+        await new Promise((resolve) => setTimeout(resolve, 1000 - elapsed));
+      }
+    } catch (error) {
+      console.error('Failed to fetch user data:', error);
+    } finally {
+      setIsLoadingUser(false);
+    }
+  };
+
+  useEffect(() => {
+    if (isTokenLoading) return; // Ждем, пока токен не будет загружен
+
+    if (accessToken && (!user || !Object.keys(user).length)) {
+      fetchUser();
+    }
+  }, [accessToken, isTokenLoading]);
+
+  // Если токен еще загружается
+  if (isTokenLoading) {
+    return (
+      <header className={styles.header}>
+        <div className={styles.container}>
+          <Link to="/" className={styles.logoLink} aria-label="Homepage">
+            <img src={logo} alt="Company Logo" className={styles.logo} />
+            LawyerHub
+          </Link>
+          <div className={styles.userProfile}>Проверка авторизации...</div>
+        </div>
+      </header>
+    );
+  }
+
+  // Если пользователь еще загружается
+  if (accessToken && (!user || !Object.keys(user).length) && isLoadingUser) {
+    return (
+      <header className={styles.header}>
+        <div className={styles.container}>
+          <Link to="/" className={styles.logoLink} aria-label="Homepage">
+            <img src={logo} alt="Company Logo" className={styles.logo} />
+            LawyerHub
+          </Link>
+          <div className={styles.userProfile}>Загрузка...</div>
+        </div>
+      </header>
+    );
+  }
+
+  // Отображаем имя пользователя или запасной текст
+  const displayName = user?.firstName || user?.name || 'Пользователь';
 
   return (
     <header className={styles.header}>
@@ -59,11 +144,16 @@ const Header = () => {
                   alt="User Avatar"
                   className={styles.avatar}
                 />
-                <span className={styles.userName}>{user.role}</span>
+                <span className={styles.userName}>{displayName}</span>
                 <img src={strel} alt="Вниз" />
               </div>
               <div className={styles.dropdownContent}>
-                <Link tp="/profile" className={styles.dropdownItem}> <img src={profile} alt="user" />Профиль</Link>
+                <Link to="/profile" className={styles.dropdownItem}>
+                  <img src={profile} alt="user" /> Профиль
+                </Link>
+                <button onClick={fetchUser} className={styles.dropdownItem}>
+                  Обновить данные
+                </button>
                 <button onClick={handleLogout} className={styles.dropdownItem}>
                   <img src={exit} alt="exit" />
                   Выход
@@ -91,7 +181,7 @@ const Header = () => {
                   <li>
                     <NavLink
                       to="/"
-                      className={({ isActive }) => isActive ? `${styles.mobileNavLink} ${styles.active}` : styles.mobileNavLink}
+                      className={({ isActive }) => (isActive ? `${styles.mobileNavLink} ${styles.active}` : styles.mobileNavLink)}
                       onClick={toggleMenu}
                     >
                       Главная
@@ -100,7 +190,7 @@ const Header = () => {
                   <li>
                     <NavLink
                       to="/services"
-                      className={({ isActive }) => isActive ? `${styles.mobileNavLink} ${styles.active}` : styles.mobileNavLink}
+                      className={({ isActive }) => (isActive ? `${styles.mobileNavLink} ${styles.active}` : styles.mobileNavLink)}
                       onClick={toggleMenu}
                     >
                       Услуги
@@ -109,7 +199,7 @@ const Header = () => {
                   <li>
                     <NavLink
                       to="/lawyers"
-                      className={({ isActive }) => isActive ? `${styles.mobileNavLink} ${styles.active}` : styles.mobileNavLink}
+                      className={({ isActive }) => (isActive ? `${styles.mobileNavLink} ${styles.active}` : styles.mobileNavLink)}
                       onClick={toggleMenu}
                     >
                       Юристы
@@ -118,7 +208,7 @@ const Header = () => {
                   <li>
                     <NavLink
                       to="/about"
-                      className={({ isActive }) => isActive ? `${styles.mobileNavLink} ${styles.active}` : styles.mobileNavLink}
+                      className={({ isActive }) => (isActive ? `${styles.mobileNavLink} ${styles.active}` : styles.mobileNavLink)}
                       onClick={toggleMenu}
                     >
                       О нас
@@ -127,7 +217,7 @@ const Header = () => {
                   <li>
                     <NavLink
                       to="/contacts"
-                      className={({ isActive }) => isActive ? `${styles.mobileNavLink} ${styles.active}` : styles.mobileNavLink}
+                      className={({ isActive }) => (isActive ? `${styles.mobileNavLink} ${styles.active}` : styles.mobileNavLink)}
                       onClick={toggleMenu}
                     >
                       Контакты
@@ -138,7 +228,6 @@ const Header = () => {
             </div>
           </div>
         ) : (
-
           <>
             <div className={styles.authButtons}>
               {authError && <span className={styles.authError}>{authError}</span>}
@@ -170,7 +259,7 @@ const Header = () => {
                   <li>
                     <NavLink
                       to="/"
-                      className={({ isActive }) => isActive ? `${styles.mobileNavLink} ${styles.active}` : styles.mobileNavLink}
+                      className={({ isActive }) => (isActive ? `${styles.mobileNavLink} ${styles.active}` : styles.mobileNavLink)}
                       onClick={toggleMenu}
                     >
                       Главная
@@ -179,7 +268,7 @@ const Header = () => {
                   <li>
                     <NavLink
                       to="/services"
-                      className={({ isActive }) => isActive ? `${styles.mobileNavLink} ${styles.active}` : styles.mobileNavLink}
+                      className={({ isActive }) => (isActive ? `${styles.mobileNavLink} ${styles.active}` : styles.mobileNavLink)}
                       onClick={toggleMenu}
                     >
                       Услуги
@@ -188,7 +277,7 @@ const Header = () => {
                   <li>
                     <NavLink
                       to="/lawyers"
-                      className={({ isActive }) => isActive ? `${styles.mobileNavLink} ${styles.active}` : styles.mobileNavLink}
+                      className={({ isActive }) => (isActive ? `${styles.mobileNavLink} ${styles.active}` : styles.mobileNavLink)}
                       onClick={toggleMenu}
                     >
                       Юристы
@@ -197,7 +286,7 @@ const Header = () => {
                   <li>
                     <NavLink
                       to="/about"
-                      className={({ isActive }) => isActive ? `${styles.mobileNavLink} ${styles.active}` : styles.mobileNavLink}
+                      className={({ isActive }) => (isActive ? `${styles.mobileNavLink} ${styles.active}` : styles.mobileNavLink)}
                       onClick={toggleMenu}
                     >
                       О нас
@@ -206,7 +295,7 @@ const Header = () => {
                   <li>
                     <NavLink
                       to="/contacts"
-                      className={({ isActive }) => isActive ? `${styles.mobileNavLink} ${styles.active}` : styles.mobileNavLink}
+                      className={({ isActive }) => (isActive ? `${styles.mobileNavLink} ${styles.active}` : styles.mobileNavLink)}
                       onClick={toggleMenu}
                     >
                       Контакты
@@ -215,7 +304,7 @@ const Header = () => {
                   <li>
                     <NavLink
                       to="/login"
-                      className={({ isActive }) => isActive ? `${styles.mobileNavLink} ${styles.active}` : styles.mobileNavLink}
+                      className={({ isActive }) => (isActive ? `${styles.mobileNavLink} ${styles.active}` : styles.mobileNavLink)}
                       onClick={toggleMenu}
                     >
                       Вход
@@ -224,7 +313,7 @@ const Header = () => {
                   <li>
                     <NavLink
                       to="/registration"
-                      className={({ isActive }) => isActive ? `${styles.mobileNavLink} ${styles.active}` : styles.mobileNavLink}
+                      className={({ isActive }) => (isActive ? `${styles.mobileNavLink} ${styles.active}` : styles.mobileNavLink)}
                       onClick={toggleMenu}
                     >
                       Регистрация

@@ -130,6 +130,26 @@ const useAuth = () => {
     return response;
   };
 
+  const getUserInfo = async () => {
+    try {
+      const response = await fetchWithAuth('http://localhost:3000/api/v1/users/me', {
+        method: 'GET',
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch user info');
+      }
+
+      const userData = await response.json();
+      dispatch(setUser(userData)); // Обновляем данные пользователя в Redux
+      return userData;
+    } catch (error) {
+      console.error('Error fetching user info:', error.message);
+      dispatch(setAuthError('Failed to fetch user info. Please log in again.'));
+      return null;
+    }
+  };
+
 
   useEffect(() => {
     if (accessToken && authError) {
@@ -147,7 +167,8 @@ const useAuth = () => {
     handleLogout,
     fetchWithAuth,
     isRefreshing,
-    isAppLoading, 
+    isAppLoading,
+    getUserInfo,
   };
 };
 
