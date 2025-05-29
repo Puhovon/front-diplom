@@ -1,4 +1,4 @@
-import styles from '@styles/chatComponent.module.css'
+import styles from '@styles/chatComponent.module.css';
 import { useState } from 'react';
 
 export default ({ name, initialMessages }) => {
@@ -11,9 +11,9 @@ export default ({ name, initialMessages }) => {
         const newMessage = {
             name: 'me',
             message: inputValue,
-            date: new Date().toLocaleTimeString()
+            date: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         };
-        setInputValue("")
+        setInputValue("");
         setMessages([...messages, newMessage]);
     }
 
@@ -21,35 +21,42 @@ export default ({ name, initialMessages }) => {
         <div className={styles.container}>
             <div className={styles.header}>
                 {name}
+                <div className={styles.statusIndicator}></div>
             </div>
-                <div className={styles.messagesContainer}>
-                    {messages.map((el, id) => {
-                        return <div key={id} className={`${styles.messageBubble} ${el.name === 'me'
-                            ? styles.userBubble
-                            : styles.otherBubble
-                            }`}>
-                            <p>{el.message}</p>
-                            <p>{el.date}</p>
+            
+            <div className={styles.messagesContainer}>
+                {messages.map((el, id) => (
+                    <div 
+                        key={id} 
+                        className={`${styles.messageBubble} ${
+                            el.name === 'me' ? styles.userBubble : styles.otherBubble
+                        }`}
+                    >
+                        <div className={styles.messageContent}>
+                            <p className={styles.messageText}>{el.message}</p>
+                            <p className={styles.messageTime}>{el.date}</p>
                         </div>
-                    })}
-                    
-                </div>
-                <form className={styles.inputContainer} onSubmit={(e) => onSubmit(e)}>
-                        <input
-                            type="text"
-                            placeholder="Введите сообщение..."
-                            className={styles.input}
-                            onChange={(e) => setInputValue(e.target.value)}
-                            value={inputValue}
-                            autoFocus
-                        />
-                        <button
-                            type="submit"
-                            className={styles.sendButton}
-                        >
-                            Отправить
-                        </button>
-                    </form>
+                    </div>
+                ))}
+            </div>
+            
+            <form className={styles.inputContainer} onSubmit={onSubmit}>
+                <input
+                    type="text"
+                    placeholder="Введите сообщение..."
+                    className={styles.input}
+                    onChange={(e) => setInputValue(e.target.value)}
+                    value={inputValue}
+                    autoFocus
+                />
+                <button
+                    type="submit"
+                    className={styles.sendButton}
+                    disabled={!inputValue.trim()}
+                >
+                    Отправить
+                </button>
+            </form>
         </div>
     )
 }

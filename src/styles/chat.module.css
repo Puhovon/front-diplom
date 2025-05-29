@@ -87,3 +87,16 @@
     color: var(--color-500);
     font-size: 1.125rem;
 }
+
+@media (max-width: 768px) {
+    .mainContainer {
+        flex-direction: column;
+        height: auto;
+    }
+    
+    .chatsList {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid var(--color-300);
+    }
+}
