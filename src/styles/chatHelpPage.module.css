@@ -38,7 +38,7 @@
 }
 
 .userBubble {
-  background-color: #DCF8C6;
+  background-color: var(--blue-400);
   align-self: flex-end;
   border-bottom-right-radius: 5px;
 }

@@ -1,34 +1,55 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styles from '@styles/chat.module.css';
 import Chat from "@components/Chat/chat";
 
-export default () => {
-    const [sendedMessages, setMessages] = useState([{ name, messages: [] }]);
+export default ({ initialChats }) => {
+    const [chats, setChats] = useState(initialChats);
     const [selectedChat, setSelectedChat] = useState(null);
 
+    useEffect(() => {
+        console.log(chats);
+    }, [])
+
+    const onChatSelected = (id) => {
+        setSelectedChat(id);
+    }
+
     return (
-        <div className={styles.container}>
-            <div className={styles.top}>
-                <h2 className={styles.leftSide}>Мои чаты</h2>
+        <div className={styles.wrapper}>
+            <div className={styles.container}>
+                <div className={styles.top}>
+                    <h2 className={styles.title}>Мои чаты</h2>
+                </div>
+                <div className={styles.mainContainer}>
+                    <div className={styles.chatsList}>
+                        {chats.map(el => (
+                            <div 
+                                key={el.id} 
+                                className={`${styles.chatItem} ${selectedChat === el.id ? styles.active : ''}`}
+                                onClick={() => onChatSelected(el.id)}
+                            >
+                                <h3>{el.name}</h3>
+                                <p>{el.lastMessage}</p>
+                            </div>
+                        ))}
+                    </div>
+                    <div className={styles.chatArea}>
+                        {selectedChat == null ? (
+                            <div className={styles.noChat}>
+                                <p>Выберите чат для начала общения</p>
+                            </div>
+                        ) : (
+                            <Chat
+                                name="Arkady"
+                                initialMessages={[
+                                    { name: "Arkady", message: 'Привет', date: '10:24' },
+                                    { name: 'me', message: "привет", date: '20:00' }
+                                ]} 
+                            />
+                        )}
+                    </div>
+                </div>
             </div>
-            <div className={styles.rightSide}>
-                {<div><Chat name="Arkady" messages={[{ name: "Arkady", message: 'Привет', date: '10:24'}, { name: 'me', message: "привет", date:'20:00'}]} /></div>}
-            </div>
-            <div className={styles.input}>
-                <form className={styles.inputContainer}>
-                    <input
-                        type="text"
-                        placeholder="Введите сообщение..."
-                        className={styles.input}
-                        autoFocus
-                    />
-                    <button
-                        type="submit"
-                        className={styles.sendButton}
-                    >
-                    Отправить
-                    </button>
-                </form>
-            </div>
-        </div>);
+        </div>
+    );
 }

@@ -30,7 +30,7 @@ function App() {
             <Route path="/lawyers" element={<Lawyers />} />
             <Route path="/services" element={<Services />} />
             <Route path="/passwordRefresh" element={<RefreshPassword />} />
-            <Route path='/chat' element={<ChatPage />} />
+            <Route path='/chat' element={<ChatPage initialChats={[{ id: 1, name: "Arkay", lastMessage: "привет" }]} />} />
           </Route>
           <Route path="/login" element={<Login />} />
           <Route path="/registration" element={<Registration />} />

@@ -1,13 +1,89 @@
+.wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    padding: 20px;
+    background-color: var(--color-100);
+}
+
 .container {
     display: flex;
     flex-direction: column;
+    width: 100%;
+    max-width: 1200px;
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.top {
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--color-300);
+}
+
+.title {
+    margin: 0;
+    font-size: 1.5rem;
+    color: var(--color-900);
+}
+
+.mainContainer {
+    display: flex;
+    height: 70vh;
+}
+
+.chatsList {
+    width: 300px;
+    border-right: 1px solid var(--color-300);
+    overflow-y: auto;
+    padding: 12px;
+}
+
+.chatItem {
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.chatItem:hover {
+    background-color: var(--color-100);
+}
+
+.chatItem.active {
+    background-color: var(--color-200);
+}
+
+.chatItem h3 {
+    margin: 0 0 4px 0;
+    font-size: 1rem;
+    color: var(--color-900);
+}
+
+.chatItem p {
+    margin: 0;
+    font-size: 0.875rem;
+    color: var(--color-600);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.chatArea {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.noChat {
+    display: flex;
+    justify-content: center;
     align-items: center;
-}
-
-.leftSide{
-
-}
-
-.rightSide {
-
+    flex: 1;
+    background-color: var(--color-50);
+    color: var(--color-500);
+    font-size: 1.125rem;
 }
