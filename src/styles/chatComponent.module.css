@@ -1,0 +1,23 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.leftSide {
+    align-items: start;
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: var(--color-600);
+}
+
+.rightSide {
+    align-items: end;
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: var(--primary-purple-color);
+}
+
+.chat {
+    width: 50vw;
+}

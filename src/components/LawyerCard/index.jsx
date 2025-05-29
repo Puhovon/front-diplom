@@ -1,25 +1,49 @@
 import { Link } from 'react-router-dom';
 import styles from './style.module.css';
+import defaultAvatar from '../../assets/icons/default-avatar.png';
+// import StarIcon from '../../assets/icons/star.svg';
 
-import { useEffect } from "react";
-const LawyerCard = ({ name, specialization, city, photo }) => {
-
-    return (
-        <div className={styles.container}>
-            <img className={styles.img} src={photo} alt="pohuy" />
-            <div className={styles.rightWrapper}>
-                <div className={styles.info}>
-                    <h3 className={styles.name}>{name}</h3>
-                    <p>Город: {city}</p>
-                    <div>Специализации: <Link className={styles.specialization}>{specialization}</Link></div>
-                </div>
-                <div className={styles.cta}>
-                    <div className={styles.price}>От 1000 за услугу</div>
-                    <button className={styles.button} type="button">Узнать подробнее</button>
-                </div>
-            </div>
-        </div>
-    )
-}
+const LawyerCard = ({ id, name, specialization, city, photo, rating }) => {
+  return (
+    <div className={styles.card}>
+      <div className={styles.avatarContainer}>
+        <img
+          src={defaultAvatar}
+          alt={`Аватар ${name}`}
+          className={styles.avatarImage}
+          loading="lazy"
+        />
+      </div>
+      <div className={styles.infoContainer}>
+        <h3 className={styles.name}>
+          {name}
+          {rating !== null && rating !== undefined ? (
+            <span className={styles.rating}>
+              {/* <img src={StarIcon} alt="Звезда рейтинга" className={styles.starIcon} /> */}
+              {rating.toFixed(1)}
+            </span>
+          ) : (
+            <span className={styles.rating}>Без рейтинга</span>
+          )}
+        </h3>
+        <p className={styles.info}>
+          <span className={styles.label}>Специализация:</span>{' '}
+          <span className={styles.labelBold}>{specialization || 'Не указано'}</span>
+        </p>
+        <p className={styles.info}>
+          <span className={styles.label}>Город:</span> <span className={styles.labelBold}>{city || 'Не указано'}</span>
+        </p>
+        <div className={styles.actionContainer}>
+        <Link to={`/profile/${id}`} className={styles.profileLink}>
+          <button type="button" className={styles.profileButton}>
+            Посмотреть профиль
+          </button>
+        </Link>
+      </div>
+      </div>
+    
+    </div>
+  );
+};
 
 export default LawyerCard;

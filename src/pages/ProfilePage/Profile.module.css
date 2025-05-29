@@ -1,0 +1,319 @@
+/* Основной контейнер страницы */
+.profileContainer {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  min-height: 100vh;
+}
+
+/* Карточка профиля */
+.profileCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  max-width: 1280px;
+  margin: auto;
+  border-radius: 12px;
+  padding: 40px;
+}
+
+/* Секция аватара */
+.avatarSection {
+  margin-bottom: 20px;
+}
+
+.avatarSection img {
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 2px solid #e0e0e0;
+}
+
+@media (max-width: 768px) {
+  .avatarSection img {
+    width: 120px;
+    height: 120px;
+  }
+}
+
+/* Секция информации */
+.infoSection {
+  font-size: 18px;
+  width: 100%;
+}
+
+.title {
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  font-size: 32px;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 10px;
+}
+
+.subtitle {
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  font-size: 20px;
+  color: #666;
+  margin-bottom: 15px;
+}
+
+.rating {
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  font-size: 24px;
+  color: #ffd700;
+  font-weight: 500;
+  margin-bottom: 20px;
+}
+
+/* Описание */
+.description {
+  margin-bottom: 30px;
+}
+
+.description .sectionTitle {
+  font-size: 32px;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 15px;
+}
+
+.description p {
+  font-size: 18px;
+  color: #333;
+  line-height: 1.6;
+  text-align: left;
+}
+
+/* Список информации */
+.infoList {
+  border-radius: 10px;
+  border: 2px solid #9291a5;
+  padding: 70px 100px;
+  display: flex;
+  flex-direction: column;
+  gap: 30px 15px;
+  margin-bottom: 30px;
+}
+
+.infoItem {
+  font-size: 22px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.infoItem img {
+  width: 24px;
+  height: 24px;
+}
+
+.infoItem .label {
+  font-weight: bold;
+  color: var(--button-blue-color, #007bff);
+  margin-right: 8px;
+  min-width: 120px;
+}
+
+.infoItem .value {
+  color: #1a1a1a;
+}
+
+/* Секция документов */
+.documentsSection {
+  padding: 20px;
+  border: 2px solid #9291a5;
+  border-radius: 10px;
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.noDocuments {
+  font-size: 18px;
+  color: #666;
+}
+
+/* Подсказка для входа */
+.loginPrompt {
+  margin-top: 20px;
+  padding: 15px;
+  border: 2px solid #9291a5;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.loginPrompt p {
+  font-size: 16px;
+  color: #666;
+  margin: 0;
+}
+
+.loginLink {
+  color: var(--button-blue-color, #007bff);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.loginLink:hover {
+  text-decoration: underline;
+}
+
+/* Контейнер загрузки */
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+.loadingText {
+  margin-top: 16px;
+  font-size: 18px;
+  color: #666;
+}
+
+/* Алерт */
+.alert {
+  max-width: 600px;
+  margin: 40px auto;
+  padding: 16px;
+  border-radius: 8px;
+}
+
+.alertLink {
+  color: var(--button-blue-color, #007bff);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.alertLink:hover {
+  text-decoration: underline;
+}
+
+/* Адаптивность */
+@media (max-width: 1024px) {
+  .profileCard {
+    padding: 30px;
+  }
+
+  .infoList {
+    padding: 50px 70px;
+  }
+
+  .infoItem {
+    font-size: 20px;
+  }
+
+  .infoItem .label {
+    min-width: 100px;
+  }
+}
+
+@media (max-width: 768px) {
+  .profileContainer {
+    padding: 20px 10px;
+  }
+
+  .profileCard {
+    padding: 20px;
+  }
+
+  .title {
+    font-size: 28px;
+  }
+
+  .subtitle {
+    font-size: 18px;
+  }
+
+  .rating {
+    font-size: 20px;
+  }
+
+  .sectionTitle {
+    font-size: 28px;
+  }
+
+  .infoSection {
+    font-size: 16px;
+  }
+
+  .infoList {
+    padding: 30px 40px;
+    gap: 20px 10px;
+  }
+
+  .infoItem {
+    font-size: 18px;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .infoItem img {
+    display: none; /* Скрываем иконки на малых экранах для экономии места */
+  }
+
+  .infoItem .label {
+    margin-right: 0;
+    margin-bottom: 4px;
+  }
+
+  .documentsSection {
+    padding: 15px;
+  }
+
+  .noDocuments {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .profileCard {
+    padding: 15px;
+  }
+
+  .title {
+    font-size: 24px;
+  }
+
+  .subtitle {
+    font-size: 16px;
+  }
+
+  .rating {
+    font-size: 18px;
+  }
+
+  .sectionTitle {
+    font-size: 24px;
+  }
+
+  .infoSection {
+    font-size: 14px;
+  }
+
+  .infoList {
+    padding: 20px 20px;
+    gap: 15px 8px;
+  }
+
+  .infoItem {
+    font-size: 16px;
+  }
+
+  .loginPrompt {
+    padding: 10px;
+  }
+
+  .loginPrompt p {
+    font-size: 14px;
+  }
+}

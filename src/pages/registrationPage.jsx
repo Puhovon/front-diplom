@@ -8,10 +8,21 @@ import Modal from '../components/ErrModal/index.jsx';
 import leftImage from '../../src/assets/reg-backg.png';
 import { setUserType, setStep, setUser } from '../store/registrationSlice.js';
 import { FormControl, FormLabel, RadioGroup, FormControlLabel, Radio } from '@mui/material';
+import Autocomplete from '@mui/material/Autocomplete';
+import TextField from '@mui/material/TextField';
 
 const Registration = () => {
     const dispatch = useDispatch();
     const { userType, step } = useSelector((state) => state.registration);
+
+    // Список доступных специализаций
+    const availableSpecializations = [
+        'Уголовное право',
+        'Гражданское право',
+        'Семейное право',
+        'Трудовое право',
+        'Налоговое право',
+    ];
 
     // Локальное состояние для формы, ошибок и модального окна
     const [formData, setFormData] = useState({
@@ -23,7 +34,7 @@ const Registration = () => {
         mail: '',
         pass: '',
         passRepeat: '',
-        specialization: '',
+        specialization: [], // Теперь массив
         job: '',
         education: '',
         region: '',
@@ -49,7 +60,7 @@ const Registration = () => {
             mail: '',
             pass: '',
             passRepeat: '',
-            specialization: '',
+            specialization: [], // Сбрасываем в массив
             job: '',
             education: '',
             region: '',
@@ -107,12 +118,11 @@ const Registration = () => {
                 newErrors.patronymic = 'Отчество слишком короткое';
             }
 
-           
             if (!formData.birthDate) {
                 newErrors.birthDate = 'Дата рождения обязательна';
             } else {
                 const birthDate = new Date(formData.birthDate);
-                const today = new Date('2025-05-27T16:21:00Z'); 
+                const today = new Date('2025-05-29T04:14:00Z'); 
                 const minAgeDate = new Date(today);
                 minAgeDate.setFullYear(minAgeDate.getFullYear() - 18);
                 if (isNaN(birthDate.getTime())) {
@@ -124,7 +134,6 @@ const Registration = () => {
                 }
             }
 
-            
             if (!formData.gender) {
                 newErrors.gender = 'Пол обязателен';
             } else if (!['male', 'female'].includes(formData.gender.toLowerCase())) {
@@ -133,10 +142,11 @@ const Registration = () => {
         }
 
         if (userType === 'provider' && step === 2) {
-            if (!formData.specialization.trim()) {
-                newErrors.specialization = 'Укажите специализацию';
-            } else if (formData.specialization.length < 3) {
-                newErrors.specialization = 'Специализация должна содержать минимум 3 символа';
+            // Проверка специализации (массив)
+            if (!formData.specialization || formData.specialization.length === 0) {
+                newErrors.specialization = 'Укажите хотя бы одну специализацию';
+            } else if (!formData.specialization.every(spec => availableSpecializations.includes(spec))) {
+                newErrors.specialization = 'Выбрана некорректная специализация';
             }
 
             if (!formData.region.trim()) {
@@ -173,6 +183,12 @@ const Registration = () => {
 
     const handleGenderChange = (e) => {
         setFormData((prev) => ({ ...prev, gender: e.target.value }));
+        setErrors((prev) => ({ ...prev, gender: '' }));
+    };
+
+    const handleSpecializationsChange = (event, newValue) => {
+        setFormData((prev) => ({ ...prev, specialization: newValue }));
+        setErrors((prev) => ({ ...prev, specialization: '' }));
     };
 
     const handleSubmit = async (e) => {
@@ -187,22 +203,25 @@ const Registration = () => {
                 birthDate: formData.birthDate,
                 email: formData.mail,
                 password: formData.pass,
-                specialization: formData.specialization,
+                specializations: formData.specialization, // Теперь массив
                 experienceStartDate: formData.job,
                 education: formData.education,
                 region: formData.region,
                 licenseNumber: formData.license,
-                registrationDate: new Date().toISOString(), // 09:21 AM PDT, 27 мая 2025
+                registrationDate: new Date().toISOString(), // 04:14 AM PDT, 29 мая 2025
             };
             try {
-                const response = await fetch(`http://localhost:3000/api/v1/auth/register${userType === 'client' ? 'Client' : 'Lawyer'}`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(userData),
-                });
-                console.log(JSON.stringify(userData))
+                const response = await fetch(
+                    `http://localhost:3000/api/v1/auth/register${userType === 'client' ? 'Client' : 'Lawyer'}`,
+                    {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(userData),
+                    }
+                );
+                console.log(JSON.stringify(userData));
                 if (!response.ok) {
                     throw new Error('Ошибка при отправке данных на сервер');
                 }
@@ -218,7 +237,7 @@ const Registration = () => {
                     mail: '',
                     pass: '',
                     passRepeat: '',
-                    specialization: '',
+                    specialization: [], // Сбрасываем в массив
                     job: '',
                     education: '',
                     region: '',
@@ -350,13 +369,20 @@ const Registration = () => {
                         <>
                             <div className={styles.stepsContainer}>
                                 <div className={styles.steps}>
-                                    Шаг {step}: {step === 1 ? 'Основные данные' : step === 2 ? 'Профессиональная информация' : 'Завершение'}
+                                    Шаг {step}:{' '}
+                                    {step === 1
+                                        ? 'Основные данные'
+                                        : step === 2
+                                        ? 'Профессиональная информация'
+                                        : 'Завершение'}
                                 </div>
                                 <div className={styles.stepPoints}>
                                     {[1, 2, 3].map((point) => (
                                         <div
                                             key={point}
-                                            className={`${styles.setepPoint} ${step >= point ? styles.activePoint : ''}`}
+                                            className={`${styles.setepPoint} ${
+                                                step >= point ? styles.activePoint : ''
+                                            }`}
                                         />
                                     ))}
                                 </div>
@@ -446,15 +472,24 @@ const Registration = () => {
                             )}
                             {step === 2 && (
                                 <>
-                                    <Input
-                                        id="specialization"
-                                        label="Специализация"
-                                        type="text"
-                                        value={formData.specialization}
-                                        onChange={handleInputChange}
-                                        error={errors.specialization}
-                                        placeholder="Например уголовное право"
-                                    />
+                                    <div className={styles.specializationSection}>
+                                        <label className={styles.specializationLabel}>Специализация</label>
+                                        <Autocomplete
+                                            multiple
+                                            options={availableSpecializations}
+                                            value={formData.specialization}
+                                            onChange={handleSpecializationsChange}
+                                            renderInput={(params) => (
+                                                <TextField
+                                                    {...params}
+                                                    placeholder="Выберите специализации"
+                                                    error={!!errors.specialization}
+                                                    helperText={errors.specialization}
+                                                />
+                                            )}
+                                            className={styles.autocomplete}
+                                        />
+                                    </div>
                                     <Input
                                         id="job"
                                         label="Опыт работы"
@@ -492,10 +527,17 @@ const Registration = () => {
                                         placeholder="Номер лицензии"
                                     />
                                     <div className={styles.buttons}>
-                                        <button onClick={prevStep} type="button" className={styles.changePointBtn}>
+                                        <button
+                                            onClick={prevStep}
+                                            type="button"
+                                            className={styles.changePointBtn}
+                                        >
                                             Назад
                                         </button>
-                                        <button onClick={nextStep} type="button" className={`${styles.changePointBtn} ${styles.submitButton}`}>
+                                        <button
+                                            type="submit"
+                                            className={`${styles.changePointBtn} ${styles.submitButton}`}
+                                        >
                                             Зарегистрироваться
                                         </button>
                                     </div>
@@ -505,7 +547,10 @@ const Registration = () => {
                                 <>
                                     <h2>Регистрация завершена успешно</h2>
                                     <div className={styles.buttons}>
-                                        <Link to="/" type="submit" className={`${styles.changePointBtn} ${styles.submitButton}`}>
+                                        <Link
+                                            to="/"
+                                            className={`${styles.changePointBtn} ${styles.submitButton}`}
+                                        >
                                             На главную
                                         </Link>
                                     </div>
