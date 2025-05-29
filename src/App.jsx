@@ -14,7 +14,7 @@ import { store } from '../src/store/store.js';
 
 import '@styles/global.css';
 import '@styles/variables.css';
-import ChatPage from './pages/ChatPage/chatPage.jsx';
+import ChatPage from '@pages/ChatPage/chatPage.jsx';
 
 function App() {
   return (
@@ -30,10 +30,10 @@ function App() {
             <Route path="/lawyers" element={<Lawyers />} />
             <Route path="/services" element={<Services />} />
             <Route path="/passwordRefresh" element={<RefreshPassword />} />
-            <Route path='/chat' element={<ChatPage />}/>
-            </Route>
-            <Route path="/login" element={<Login />} />
-            <Route path="/registration" element={<Registration />} />
+            <Route path='/chat' element={<ChatPage />} />
+          </Route>
+          <Route path="/login" element={<Login />} />
+          <Route path="/registration" element={<Registration />} />
         </Routes>
       </BrowserRouter>
     </Provider>
