@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Box, Rating, TextField, Button, Typography } from '@mui/material';
 import StarIcon from '@mui/icons-material/Star';
 
-const FeedbackForm = (callBack) => {
+const FeedbackForm = ({callBack}) => {
   const [rating, setRating] = useState(0);
   const [review, setReview] = useState('');
   const [submitted, setSubmitted] = useState(false);
@@ -11,12 +11,9 @@ const FeedbackForm = (callBack) => {
     e.preventDefault();
     console.log({ rating, review });
     setSubmitted(true);
-    await callBack('http://localhost:3000/api/v1/lawyers/1/reviews', {
-      method: 'POST',
-      body: {
-        "text": review,
-        "rating": rating,
-      },
+    callBack({
+      "text": review,
+      "rating": rating,
     })
   };
 

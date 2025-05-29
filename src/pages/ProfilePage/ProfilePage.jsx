@@ -32,8 +32,15 @@ const Profile = () => {
     region: data?.LawyerProfile?.region || '',
     price: data?.LawyerProfile?.price || '',
   }), []);
-
+  console.log(user);
   const [editForm, setEditForm] = useState(initForm(null));
+
+  const onReviewSubmit = (message) => {
+    fetchWithAuth('http://localhost:3000/api/v1/lawyers/1/reviews', {
+      method: 'POST',
+      body: JSON.stringify(message)}
+    )
+  }
 
   // Загрузка профиля
   const loadProfile = useCallback(async () => {
@@ -242,9 +249,9 @@ const Profile = () => {
           Редактировать профиль
         </Button>
       )}
-      {userId && (
+      {userId && user.role =='client' && (
         <Box>
-          <FeedbackForm callBack={fetchWithAuth}/>
+          <FeedbackForm callBack={onReviewSubmit}/>
         </Box>
       )}
 

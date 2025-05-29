@@ -130,7 +130,6 @@ const useAuth = () => {
       handleLogout();
       throw new Error('Нет токена доступа');
     }
-
     const headers = {
       ...options.headers,
       Authorization: `Bearer ${accessToken}`,
