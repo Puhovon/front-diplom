@@ -1,14 +1,15 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import useAuth from '@hooks/useAuth';
-import { 
-  Avatar, CircularProgress, Alert, Fade, 
-  TextField, Button, Select, MenuItem, 
-  FormControl, InputLabel, Typography, Box 
+import {
+  Avatar, CircularProgress, Alert, Fade,
+  TextField, Button, Select, MenuItem,
+  FormControl, InputLabel, Typography, Box
 } from '@mui/material';
 import styles from './Profile.module.css';
 import defaultAvatar from '@assets/icons/default-avatar.png';
 import man from '@assets/icons/lawyers/man.png';
+import FeedbackForm from '@components/FeedBackForm/feedBackForm';
 
 const Profile = () => {
   const { userId } = useParams();
@@ -17,7 +18,7 @@ const Profile = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
-  
+
   // Инициализация формы редактирования
   const initForm = useCallback((data) => ({
     firstName: data?.firstName || '',
@@ -153,11 +154,11 @@ const Profile = () => {
       <TextField name="firstName" label="Имя" value={editForm.firstName} onChange={handleInputChange} fullWidth margin="normal" />
       <TextField name="lastName" label="Фамилия" value={editForm.lastName} onChange={handleInputChange} fullWidth margin="normal" />
       <TextField name="patronymic" label="Отчество" value={editForm.patronymic} onChange={handleInputChange} fullWidth margin="normal" />
-      
+
       {isClient ? (
         <>
-          <TextField name="birthDate" label="Дата рождения" type="date" 
-            value={editForm.birthDate} onChange={handleInputChange} fullWidth margin="normal" 
+          <TextField name="birthDate" label="Дата рождения" type="date"
+            value={editForm.birthDate} onChange={handleInputChange} fullWidth margin="normal"
             InputLabelProps={{ shrink: true }} />
           <FormControl fullWidth margin="normal">
             <InputLabel>Пол</InputLabel>
@@ -169,20 +170,20 @@ const Profile = () => {
         </>
       ) : (
         <>
-          <TextField name="aboutMe" label="О себе" multiline rows={4} 
+          <TextField name="aboutMe" label="О себе" multiline rows={4}
             value={editForm.aboutMe} onChange={handleInputChange} fullWidth margin="normal" />
-          <TextField name="education" label="Образование" 
+          <TextField name="education" label="Образование"
             value={editForm.education} onChange={handleInputChange} fullWidth margin="normal" />
           <TextField name="experienceStartDate" label="Дата начала опыта" type="date"
             value={editForm.experienceStartDate} onChange={handleInputChange} fullWidth margin="normal"
             InputLabelProps={{ shrink: true }} />
-          <TextField name="region" label="Регион" 
+          <TextField name="region" label="Регион"
             value={editForm.region} onChange={handleInputChange} fullWidth margin="normal" />
-          <TextField name="price" label="Цена (₽)" type="number" 
+          <TextField name="price" label="Цена (₽)" type="number"
             value={editForm.price} onChange={handleInputChange} fullWidth margin="normal" />
         </>
       )}
-      
+
       <Box mt={2}>
         <Button variant="contained" color="primary" onClick={handleSaveChanges} disabled={isLoading}>
           {isLoading ? <CircularProgress size={24} /> : 'Сохранить'}
@@ -200,7 +201,7 @@ const Profile = () => {
       <Typography variant="h4" className={styles.title}>
         {`${profileData.lastName || ''} ${profileData.firstName || ''} ${profileData.patronymic || ''}`}
       </Typography>
-      
+
       {!isClient && LawyerProfile && (
         <>
           <Typography className={styles.subtitle}>
@@ -209,24 +210,24 @@ const Profile = () => {
           <Typography className={styles.rating}>4.5 ★</Typography>
         </>
       )}
-      
+
       <div className={styles.description}>
         <Typography variant="h5" className={styles.sectionTitle}>О себе</Typography>
         <Typography>{LawyerProfile?.aboutMe || 'Нет информации'}</Typography>
       </div>
-      
+
       <div className={styles.infoList}>
-        {renderInfoItem(man, 'Возраст', profileData.birthDate, 
+        {renderInfoItem(man, 'Возраст', profileData.birthDate,
           date => date ? new Date().getFullYear() - new Date(date).getFullYear() : null)}
-        
-        {isClient && renderInfoItem(man, 'Пол', profileData.gender, 
+
+        {isClient && renderInfoItem(man, 'Пол', profileData.gender,
           gender => gender === 'male' ? 'Мужской' : gender === 'female' ? 'Женский' : null)}
-        
+
         {!isClient && LawyerProfile && (
           <>
             {renderInfoItem(man, 'Специализация', LawyerProfile.Specializations?.join(', '))}
             {renderInfoItem(man, 'Образование', LawyerProfile.education)}
-            {renderInfoItem(man, 'Опыт работы', LawyerProfile.experienceStartDate, 
+            {renderInfoItem(man, 'Опыт работы', LawyerProfile.experienceStartDate,
               date => date ? `${new Date().getFullYear() - new Date(date).getFullYear()} лет` : null)}
             {renderInfoItem(man, 'Регион', LawyerProfile.region)}
             {renderInfoItem(man, 'Цена', LawyerProfile.price, price => price ? `${price} ₽` : null)}
@@ -234,12 +235,18 @@ const Profile = () => {
           </>
         )}
       </div>
-      
+
       {!userId && (
         <Button variant="contained" color="primary" onClick={() => setIsEditing(true)} sx={{ mt: 2 }}>
           Редактировать профиль
         </Button>
       )}
+      {userId && (
+        <div>
+          <FeedbackForm/>
+        </div>
+      )}
+
     </>
   );
 
