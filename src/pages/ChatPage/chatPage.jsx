@@ -14,6 +14,16 @@ export default ({ initialChats }) => {
         setSelectedChat(id);
     }
 
+    const onLastMessageChanged = (id, message) => {
+        const newChats = chats.map(el => {
+            if(el.id == id)
+                el.lastMessage = message.message
+            return el;
+        });
+        setChats(newChats)
+        
+    }
+
     return (
         <div className={styles.wrapper}>
             <div className={styles.container}>
@@ -39,12 +49,14 @@ export default ({ initialChats }) => {
                                 <p>Выберите чат для начала общения</p>
                             </div>
                         ) : (
-                            <Chat
+                            <Chat 
+                                id={1}
                                 name="Arkady"
                                 initialMessages={[
                                     { name: "Arkady", message: 'Привет', date: '10:24' },
                                     { name: 'me', message: "привет", date: '20:00' }
                                 ]} 
+                                callBack ={onLastMessageChanged}
                             />
                         )}
                     </div>

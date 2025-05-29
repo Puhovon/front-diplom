@@ -1,7 +1,7 @@
 import styles from '@styles/chatComponent.module.css';
 import { useState } from 'react';
 
-export default ({ name, initialMessages }) => {
+export default ({ id, name, callBack, initialMessages }) => {
     const [messages, setMessages] = useState(initialMessages);
     const [inputValue, setInputValue] = useState('');
 
@@ -15,6 +15,7 @@ export default ({ name, initialMessages }) => {
         };
         setInputValue("");
         setMessages([...messages, newMessage]);
+        callBack(id, newMessage);
     }
 
     return (
@@ -23,14 +24,13 @@ export default ({ name, initialMessages }) => {
                 {name}
                 <div className={styles.statusIndicator}></div>
             </div>
-            
+
             <div className={styles.messagesContainer}>
                 {messages.map((el, id) => (
-                    <div 
-                        key={id} 
-                        className={`${styles.messageBubble} ${
-                            el.name === 'me' ? styles.userBubble : styles.otherBubble
-                        }`}
+                    <div
+                        key={id}
+                        className={`${styles.messageBubble} ${el.name === 'me' ? styles.userBubble : styles.otherBubble
+                            }`}
                     >
                         <div className={styles.messageContent}>
                             <p className={styles.messageText}>{el.message}</p>
@@ -39,7 +39,7 @@ export default ({ name, initialMessages }) => {
                     </div>
                 ))}
             </div>
-            
+
             <form className={styles.inputContainer} onSubmit={onSubmit}>
                 <input
                     type="text"
