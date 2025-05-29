@@ -1,201 +1,316 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux';
-import { updateProfile, clearProfileError, clearProfileSuccess } from '@store/profileSlice';
+import { useDispatch, useSelector } from 'react-redux';
 import useAuth from '@hooks/useAuth';
+import { updateProfile, fetchProfile, clearProfileError, clearProfileSuccess } from '../../store/profileSlice';
 import {
-  TextField,
-  Button,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  Alert,
-  Fade,
+  Avatar, CircularProgress, Alert, Fade,
+  TextField, Button, Select, MenuItem,
+  FormControl, InputLabel, Typography, Box
 } from '@mui/material';
-import styles from './EditProfile.module.css';
-import LoadingSpinner from '@components/LoadingSpinner';
-import ErrorAlert from '@components/ErrorAlert';
-import { AVAILABLE_SPECIALIZATIONS } from '@constants/specializations';
+import styles from './Profile.module.css';
+import defaultAvatar from '@assets/icons/default-avatar.png';
 
 const EditProfile = () => {
-  const { user, accessToken, authError } = useAuth();
-  const { profileData, isLoading, error, success } = useSelector((state) => state.profile);
   const dispatch = useDispatch();
+  const { accessToken } = useAuth();
+  const { profileData, isLoading, error: profileError, success } = useSelector((state) => state.profile);
   const navigate = useNavigate();
-  const [formData, setFormData] = React.useState({
+  const [formValues, setFormValues] = useState({
     firstName: '',
     lastName: '',
     patronymic: '',
     birthDate: '',
     gender: '',
     aboutMe: '',
-    specializations: [],
     education: '',
     experienceStartDate: '',
     region: '',
     price: '',
   });
+  const [error, setError] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const isClient = user?.role === 'client';
+  // Initialize form values
+  const initForm = useCallback((data) => ({
+    firstName: data?.firstName || '',
+    lastName: data?.lastName || '',
+    patronymic: data?.patronymic || '',
+    birthDate: data?.birthDate?.split('T')[0] || '',
+    gender: data?.gender || '',
+    aboutMe: data?.LawyerProfile?.aboutMe || '',
+    education: data?.LawyerProfile?.education || '',
+    experienceStartDate: data?.LawyerProfile?.experienceStartDate?.split('T')[0] || '',
+    region: data?.LawyerProfile?.region || '',
+    price: data?.LawyerProfile?.price || '',
+  }), []);
 
+  // Load profile data
+  useEffect(() => {
+    if (accessToken) {
+      dispatch(fetchProfile({ accessToken }));
+    }
+  }, [dispatch, accessToken]);
+
+  // Update form values when profileData changes
   useEffect(() => {
     if (profileData) {
-      setFormData({
-        firstName: profileData.firstName || '',
-        lastName: profileData.lastName || '',
-        patronymic: profileData.patronymic || '',
-        birthDate: profileData.birthDate ? profileData.birthDate.split('T')[0] : '',
-        gender: profileData.gender || '',
-        aboutMe: profileData.LawyerProfile?.aboutMe || '',
-        specializations: profileData.LawyerProfile?.Specializations || [],
-        education: profileData.LawyerProfile?.education || '',
-        experienceStartDate: profileData.LawyerProfile?.experienceStartDate
-          ? profileData.LawyerProfile.experienceStartDate.split('T')[0]
-          : '',
-        region: profileData.LawyerProfile?.region || '',
-        price: profileData.LawyerProfile?.price || '',
-      });
-    } else if (!authError) {
-      navigate('/login');
+      setFormValues(initForm(profileData));
     }
-  }, [profileData, navigate, authError]);
+  }, [profileData, initForm]);
 
-  const handleChange = (e) => {
+  // Handle input change
+  const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: name === 'specializations' ? value.split(',').map((s) => s.trim()).filter(Boolean) : value,
-    }));
+    setFormValues(prev => ({ ...prev, [name]: value }));
   };
 
-  const validateForm = () => {
-    if (!formData.firstName.trim() || !formData.lastName.trim()) {
-      return 'Имя и фамилия обязательны';
-    }
-    if (!isClient && formData.price && isNaN(parseFloat(formData.price))) {
-      return 'Цена должна быть числом';
-    }
-    return null;
-  };
-
+  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const validationError = validateForm();
-    if (validationError) {
-      dispatch(clearProfileError());
-      dispatch(clearProfileSuccess());
-      dispatch(setAuthError(validationError));
-      return;
-    }
+    setIsSubmitting(true);
+    setError(null);
+    dispatch(clearProfileError());
+    dispatch(clearProfileSuccess());
 
-    const payload = isClient
-      ? {
-          firstName: formData.firstName.trim(),
-          lastName: formData.lastName.trim(),
-          patronymic: formData.patronymic?.trim() || null,
-          birthDate: formData.birthDate || null,
-          gender: formData.gender || null,
-        }
-      : {
-          firstName: formData.firstName.trim(),
-          lastName: formData.lastName.trim(),
-          patronymic: formData.patronymic?.trim() || null,
-          birthDate: formData.birthDate || null,
-          gender: formData.gender || null,
-          LawyerProfile: {
-            aboutMe: formData.aboutMe?.trim() || null,
-            Specializations: formData.specializations.length > 0 ? formData.specializations : null,
-            education: formData.education?.trim() || null,
-            experienceStartDate: formData.experienceStartDate || null,
-            region: formData.region?.trim() || null,
-            price: formData.price ? parseFloat(formData.price) : null,
-          },
+    try {
+      const isClient = profileData?.role === 'client';
+      const body = {
+        firstName: formValues.firstName.trim(),
+        lastName: formValues.lastName.trim(),
+        patronymic: formValues.patronymic.trim(),
+        birthDate: formValues.birthDate,
+        gender: formValues.gender,
+      };
+
+      // Validate required fields
+      if (!body.firstName || !body.lastName) {
+        throw new Error('Имя и фамилия обязательны для заполнения');
+      }
+
+      if (!isClient) {
+        body.LawyerProfile = {
+          aboutMe: formValues.aboutMe.trim(),
+          education: formValues.education.trim(),
+          experienceStartDate: formValues.experienceStartDate,
+          region: formValues.region.trim(),
+          price: formValues.price ? parseFloat(formValues.price) : null,
         };
 
-    dispatch(updateProfile({ payload, accessToken }));
+        if (body.LawyerProfile.price && isNaN(body.LawyerProfile.price)) {
+          throw new Error('Цена должна быть числом');
+        }
+      }
+
+      await dispatch(updateProfile({
+        payload: body,
+        accessToken,
+      })).unwrap();
+
+      navigate('/profile', { state: { profileUpdated: true } });
+    } catch (err) {
+      console.error('Ошибка сохранения:', err);
+      setError(err.message || 'Не удалось сохранить изменения');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
-  useEffect(() => {
-    if (success) {
-      setTimeout(() => {
-        dispatch(clearProfileSuccess());
-        navigate('/profile?refresh=true');
-      }, 1500);
-    }
-  }, [success, navigate, dispatch]);
-
-  const renderField = (label, name, type = 'text', props = {}) => (
-    <TextField
-      label={label}
-      name={name}
-      type={type}
-      value={formData[name] || ''}
-      onChange={handleChange}
-      fullWidth
-      margin="normal"
-      className={styles.textField}
-      InputLabelProps={type === 'date' ? { shrink: true } : undefined}
-      {...props}
-    />
+  // Render loading state
+  const renderLoading = () => (
+    <Fade in timeout={500}>
+      <div className={styles.loadingContainer}>
+        <CircularProgress size={40} thickness={4} />
+        <Typography className={styles.loadingText}>Загрузка профиля...</Typography>
+      </div>
+    </Fade>
   );
 
-  if (isLoading) {
-    return <LoadingSpinner message="Сохранение профиля..." />;
-  }
+  // Render error state
+  const renderError = (message) => (
+    <Fade in timeout={500}>
+      <Alert severity="error" className={styles.alert}>
+        <Typography variant="h6">Ошибка</Typography>
+        {message}
+        {!accessToken && (
+          <Typography>
+            <Link to="/login" className={styles.alertLink}>Войдите</Link> заново.
+          </Typography>
+        )}
+      </Alert>
+    </Fade>
+  );
 
-  if (authError || error) {
-    return <ErrorAlert error={authError || error} />;
-  }
+  if (isLoading) return renderLoading();
+  if (error || profileError) return renderError(error || profileError);
+  if (!profileData) return renderError('Профиль не найден');
 
-  if (success) {
-    return (
-      <Fade in={true} timeout={500}>
-        <Alert severity="success" className={styles.alert}>
-          <AlertTitle>Успех</AlertTitle>
-          {success}
-        </Alert>
-      </Fade>
-    );
-  }
+  const isClient = profileData.role === 'client';
 
   return (
-    <div className={styles.editProfileContainer}>
-      <h1 className={styles.title}>Редактировать профиль</h1>
-      <form onSubmit={handleSubmit} className={styles.form}>
-        {renderField('Имя', 'firstName', 'text', { required: true })}
-        {renderField('Фамилия', 'lastName', 'text', { required: true })}
-        {renderField('Отчество', 'patronymic', 'text')}
-        {renderField('Дата рождения', 'birthDate', 'date')}
-        <FormControl fullWidth margin="normal" className={styles.textField}>
-          <InputLabel>Пол</InputLabel>
-          <Select name="gender" value={formData.gender} onChange={handleChange} label="Пол">
-            <MenuItem value="male">Мужской</MenuItem>
-            <MenuItem value="female">Женский</MenuItem>
-            <MenuItem value="">Не указан</MenuItem>
-          </Select>
-        </FormControl>
-        {!isClient && (
-          <>
-            {renderField('О себе', 'aboutMe', 'text', { multiline: true, rows: 4 })}
-            {renderField('Специализация (через запятую)', 'specializations')}
-            {renderField('Образование', 'education')}
-            {renderField('Начало опыта работы', 'experienceStartDate', 'date')}
-            {renderField('Регион', 'region')}
-            {renderField('Цена за консультацию (₽)', 'price', 'number')}
-          </>
-        )}
-        <Button
-          type="submit"
-          variant="contained"
-          color="primary"
-          disabled={isLoading}
-          className={styles.submitButton}
-        >
-          {isLoading ? 'Сохранение...' : 'Сохранить изменения'}
-        </Button>
-      </form>
-    </div>
+    <Box className={styles.profileContainer}>
+      <Box className={styles.profileCard}>
+        <Box className={styles.avatarSection}>
+          <Avatar
+            alt="Аватар пользователя"
+            src={profileData.avatar_url || defaultAvatar}
+            sx={{ width: 150, height: 150, border: '2px solid #e0e0e0' }}
+          />
+        </Box>
+        <Box className={styles.infoSection}>
+          <Typography variant="h4" className={styles.title}>
+            Редактирование профиля
+          </Typography>
+          
+          {success && (
+            <Alert severity="success" sx={{ mb: 3 }}>
+              {success}
+            </Alert>
+          )}
+          
+          {(error || profileError) && (
+            <Alert severity="error" sx={{ mb: 3 }}>
+              {error || profileError}
+            </Alert>
+          )}
+
+          <form onSubmit={handleSubmit}>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+              <TextField
+                name="firstName"
+                label="Имя"
+                value={formValues.firstName}
+                onChange={handleInputChange}
+                fullWidth
+                margin="normal"
+                required
+                disabled={isSubmitting}
+              />
+              <TextField
+                name="lastName"
+                label="Фамилия"
+                value={formValues.lastName}
+                onChange={handleInputChange}
+                fullWidth
+                margin="normal"
+                required
+                disabled={isSubmitting}
+              />
+              <TextField
+                name="patronymic"
+                label="Отчество"
+                value={formValues.patronymic}
+                onChange={handleInputChange}
+                fullWidth
+                margin="normal"
+                disabled={isSubmitting}
+              />
+              <TextField
+                name="birthDate"
+                label="Дата рождения"
+                type="date"
+                value={formValues.birthDate}
+                onChange={handleInputChange}
+                InputLabelProps={{ shrink: true }}
+                fullWidth
+                margin="normal"
+                disabled={isSubmitting}
+              />
+              
+              {isClient && (
+                <FormControl fullWidth margin="normal" disabled={isSubmitting}>
+                  <InputLabel>Пол</InputLabel>
+                  <Select
+                    name="gender"
+                    value={formValues.gender}
+                    onChange={handleInputChange}
+                    label="Пол"
+                    required
+                  >
+                    <MenuItem value="male">Мужской</MenuItem>
+                    <MenuItem value="female">Женский</MenuItem>
+                  </Select>
+                </FormControl>
+              )}
+              
+              {!isClient && (
+                <>
+                  <TextField
+                    name="aboutMe"
+                    label="О себе"
+                    multiline
+                    rows={4}
+                    value={formValues.aboutMe}
+                    onChange={handleInputChange}
+                    fullWidth
+                    margin="normal"
+                    disabled={isSubmitting}
+                  />
+                  <TextField
+                    name="education"
+                    label="Образование"
+                    value={formValues.education}
+                    onChange={handleInputChange}
+                    fullWidth
+                    margin="normal"
+                    disabled={isSubmitting}
+                  />
+                  <TextField
+                    name="experienceStartDate"
+                    label="Начало опыта работы"
+                    type="date"
+                    value={formValues.experienceStartDate}
+                    onChange={handleInputChange}
+                    InputLabelProps={{ shrink: true }}
+                    fullWidth
+                    margin="normal"
+                    disabled={isSubmitting}
+                  />
+                  <TextField
+                    name="region"
+                    label="Регион"
+                    value={formValues.region}
+                    onChange={handleInputChange}
+                    fullWidth
+                    margin="normal"
+                    disabled={isSubmitting}
+                  />
+                  <TextField
+                    name="price"
+                    label="Цена (руб)"
+                    type="number"
+                    value={formValues.price}
+                    onChange={handleInputChange}
+                    fullWidth
+                    margin="normal"
+                    disabled={isSubmitting}
+                    inputProps={{ min: 0, step: 100 }}
+                  />
+                </>
+              )}
+            </Box>
+            
+            <Box sx={{ mt: 3, display: 'flex', gap: 2 }}>
+              <Button
+                type="submit"
+                variant="contained"
+                disabled={isSubmitting}
+                startIcon={isSubmitting ? <CircularProgress size={20} /> : null}
+              >
+                {isSubmitting ? 'Сохранение...' : 'Сохранить'}
+              </Button>
+              <Button
+                variant="outlined"
+                onClick={() => navigate('/profile')}
+                disabled={isSubmitting}
+              >
+                Отмена
+              </Button>
+            </Box>
+          </form>
+        </Box>
+      </Box>
+    </Box>
   );
 };
 

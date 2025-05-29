@@ -1,5 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Provider } from 'react-redux';
+import { store } from '../src/store/index.js';
+
 import Home from '@pages/HomePage/HomePage.jsx';
 import Layout from '@components/Layout.jsx';
 import Registration from '@pages/registrationPage.jsx';
@@ -10,11 +12,13 @@ import Lawyers from '@pages/LawyerPage/lawyersPage.jsx';
 import Login from '@pages/LoginPage/LoginPage.jsx';
 import Services from '@pages/servicesPage.jsx';
 import RefreshPassword from '@pages/RefreshPassword/RefreshPassword.jsx';
-import { store } from '../src/store/index.js';
+import ChatPage from '@pages/ChatPage/chatPage.jsx';
+import EditProfile from './pages/ProfilePage/EditProfile.jsx';
+
 
 import '@styles/global.css';
 import '@styles/variables.css';
-import ChatPage from '@pages/ChatPage/chatPage.jsx';
+
 
 function App() {
   return (
@@ -25,6 +29,7 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/profile/:userId" element={<Profile />} /> {/* Динамический маршрут для чужого профиля */}
+            <Route path="/profile/edit" element={<EditProfile />} />
             <Route path="/about" element={<About />} />
             <Route path="/contacts" element={<Contacts />} />
             <Route path="/lawyers" element={<Lawyers />} />

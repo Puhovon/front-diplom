@@ -53,7 +53,7 @@ export default ({ initialChats }) => {
                                 id={1}
                                 name="Arkady"
                                 initialMessages={[
-                                    { name: "Arkady", message: 'Привет', date: '10:24' },
+                                    { name: "Владимир Баранов", message: 'Привет', date: '10:24' },
                                     { name: 'me', message: "привет", date: '20:00' }
                                 ]} 
                                 callBack ={onLastMessageChanged}
