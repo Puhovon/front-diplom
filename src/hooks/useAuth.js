@@ -81,6 +81,7 @@ const useAuth = () => {
 
   const refreshTokens = useCallback(async () => {
     try {
+      console.log('Attempting to refresh token with refreshToken:', refreshToken);
       const response = await fetch('http://localhost:3000/api/v1/auth/refresh', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -88,13 +89,16 @@ const useAuth = () => {
       });
 
       if (!response.ok) {
-        throw new Error('Не удалось обновить токен');
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || `Не удалось обновить токен, статус: ${response.status}`);
       }
 
       const { accessToken: newAccessToken, refreshToken: newRefreshToken } = await response.json();
+      console.log('Token refresh successful, new accessToken:', newAccessToken);
       dispatch(setTokens({ accessToken: newAccessToken, refreshToken: newRefreshToken }));
       return newAccessToken;
     } catch (err) {
+      console.error('Token refresh failed:', err);
       setError('Сессия истекла. Войдите заново.');
       dispatch(setAuthError('Сессия истекла. Войдите заново.'));
       handleLogout();
@@ -131,24 +135,27 @@ const useAuth = () => {
       throw new Error('Нет токена доступа');
     }
 
-    const headers = {
+    let headers = {
       ...options.headers,
       Authorization: `Bearer ${accessToken}`,
       'Content-Type': 'application/json',
     };
 
     try {
+      console.log('Initial fetch with URL:', url, 'Headers:', headers);
       let response = await fetch(url, { ...options, headers });
 
       if (response.status === 401) {
+        console.log('Received 401, attempting token refresh...');
         const newAccessToken = await refreshTokens();
         headers.Authorization = `Bearer ${newAccessToken}`;
+        console.log('Retrying fetch with new token, Headers:', headers);
         response = await fetch(url, { ...options, headers });
       }
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || `Ошибка запроса: ${response.status}`);
+        throw new Error(errorData.message || `Ошибка запроса: ${response.status} ${response.statusText} для URL: ${url}`);
       }
 
       return response;
