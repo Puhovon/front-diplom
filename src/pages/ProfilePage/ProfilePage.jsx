@@ -4,6 +4,7 @@ import useAuth from '@hooks/useAuth';
 import { Avatar, CircularProgress, Alert, AlertTitle, Fade } from '@mui/material';
 import styles from './Profile.module.css';
 import defaultAvatar from '@assets/icons/default-avatar.png';
+import man from '@assets/icons/lawyers/man.png';
 
 const Profile = () => {
   const { userId } = useParams();
@@ -12,6 +13,7 @@ const Profile = () => {
   const [profileData, setProfileData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isTokenLoading, setIsTokenLoading] = useState(true);
+  const [isUserInfoLoading, setIsUserInfoLoading] = useState(false);
   const [error, setError] = useState(null);
 
   // Проверка токена
@@ -23,6 +25,7 @@ const Profile = () => {
         }
       } catch (err) {
         console.error('Ошибка проверки токена:', err);
+        setError('Ошибка проверки авторизации');
       } finally {
         setIsTokenLoading(false);
       }
@@ -63,8 +66,11 @@ const Profile = () => {
           }
           const userData = await response.json();
           setProfileData(userData);
-        } else if (!user || !Object.keys(user).length) {
+        } else if (!user && !isUserInfoLoading) {
+          setIsUserInfoLoading(true);
+          console.log('Вызываем getUserInfo для текущего пользователя');
           await getUserInfo();
+          setIsUserInfoLoading(false);
         }
       } catch (error) {
         setError(error.message);
@@ -74,7 +80,7 @@ const Profile = () => {
     };
 
     fetchProfileData();
-  }, [userId, accessToken, user, navigate, isTokenLoading]);
+  }, [userId, accessToken, navigate, isTokenLoading]);
 
   // Отображение загрузки токена
   if (isTokenLoading) {
@@ -105,7 +111,7 @@ const Profile = () => {
   }
 
   // Отображение загрузки данных
-  if (isLoading) {
+  if (isLoading || isUserInfoLoading) {
     return (
       <Fade in={true} timeout={500}>
         <div className={styles.loadingContainer}>
@@ -123,19 +129,16 @@ const Profile = () => {
         <Alert severity="error" className={styles.alert}>
           <AlertTitle>Ошибка</AlertTitle>
           {error}
+          {error.includes('авторизация') && (
+            <p>
+              Попробуйте{' '}
+              <Link to="/login" className={styles.alertLink}>
+                войти
+              </Link>{' '}
+              заново.
+            </p>
+          )}
         </Alert>
-      </Fade>
-    );
-  }
-
-  // Данные пользователя еще не загружены
-  if (!user && !userId) {
-    return (
-      <Fade in={true} timeout={500}>
-        <div className={styles.loadingContainer}>
-          <CircularProgress size={40} thickness={4} />
-          <p className={styles.loadingText}>Загрузка вашего профиля...</p>
-        </div>
       </Fade>
     );
   }
@@ -143,16 +146,24 @@ const Profile = () => {
   // Определяем данные для отображения
   const displayUser = userId ? profileData : user;
 
+  // Если данные не загружены
   if (!displayUser) {
     return (
       <Fade in={true} timeout={500}>
         <Alert severity="info" className={styles.alert}>
           <AlertTitle>Данные не найдены</AlertTitle>
-          Данные пользователя не найдены.
+          Данные пользователя не найдены. Попробуйте обновить страницу или{' '}
+          <Link to="/login" className={styles.alertLink}>
+            войти
+          </Link>{' '}
+          заново.
         </Alert>
       </Fade>
     );
   }
+
+  // Проверяем, является ли пользователь клиентом
+  const isClient = displayUser.role === 'client';
 
   return (
     <div className={styles.profileContainer}>
@@ -174,68 +185,97 @@ const Profile = () => {
         </div>
         <div className={styles.infoSection}>
           <h1 className={styles.title}>
-            {userId ? `Профиль юриста` : 'Ваш профиль'}
-            {userId && <span className={styles.userId}> (ID: {userId})</span>}
+            {displayUser.firstName} {displayUser.lastName} {displayUser.patronymic}
           </h1>
-          <div className={styles.infoItem}>
-            <span className={styles.label}>Имя:</span>
-            <span className={styles.value}>
-              {`${displayUser.firstName || ''} ${displayUser.lastName || ''} ${displayUser.patronymic || ''}`.trim() || 'Не указано'}
-            </span>
-          </div>
-          <div className={styles.infoItem}>
-            <span className={styles.label}>Email:</span>
-            <span className={styles.value}>{displayUser.email || 'Не указано'}</span>
-          </div>
-          <div className={styles.infoItem}>
-            <span className={styles.label}>Роль:</span>
-            <span className={styles.value}>{displayUser.role || 'Не указано'}</span>
-          </div>
-          {displayUser.role === 'lawyer' && displayUser.LawyerProfile && (
+          {!isClient && (
             <>
+              <p className={styles.subtitle}>
+                Специализация:{' '}
+                {displayUser.LawyerProfile?.Specializations?.length > 0
+                  ? displayUser.LawyerProfile.Specializations.join(', ')
+                  : 'Не указана'}
+              </p>
+              <span className={styles.rating}>4.5 ★</span>
+            </>
+          )}
+          <div className={styles.description}>
+            <h2 className={styles.sectionTitle}>О себе</h2>
+            <p>{displayUser.LawyerProfile?.aboutMe || 'Информация о пользователе отсутствует'}</p>
+          </div>
+          {!isClient && displayUser.LawyerProfile && (
+            <>
+              <h2 className={styles.sectionTitle}>Данные специалиста</h2>
+              <div className={styles.infoList}>
+                <div className={styles.infoItem}>
+                  <img src={man} alt="man" />
+                  <span className={styles.label}>Возраст:</span>
+                  <span className={styles.value}>
+                    {displayUser.birthDate
+                      ? new Date().getFullYear() - new Date(displayUser.birthDate).getFullYear()
+                      : 'Не указано'}
+                  </span>
+                </div>
+                <div className={styles.infoItem}>
+                  <img src={man} alt="man" />
+                  <span className={styles.label}>Специализация:</span>
+                  <span className={styles.value}>
+                    {displayUser.LawyerProfile.Specializations?.length > 0
+                      ? displayUser.LawyerProfile.Specializations.join(', ')
+                      : 'Не указана'}
+                  </span>
+                </div>
+                <div className={styles.infoItem}>
+                  <img src={man} alt="man" />
+                  <span className={styles.label}>Образование:</span>
+                  <span className={styles.value}>
+                    {displayUser.LawyerProfile.education || 'Не указано'}
+                  </span>
+                </div>
+                <div className={styles.infoItem}>
+                  <img src={man} alt="man" />
+                  <span className={styles.label}>Опыт работы:</span>
+                  <span className={styles.value}>
+                    {displayUser.LawyerProfile.experienceStartDate
+                      ? `${new Date().getFullYear() - new Date(displayUser.LawyerProfile.experienceStartDate).getFullYear()} лет`
+                      : 'Не указано'}
+                  </span>
+                </div>
+                <div className={styles.infoItem}>
+                  <img src={man} alt="man" />
+                  <span className={styles.label}>Регион:</span>
+                  <span className={styles.value}>
+                    {displayUser.LawyerProfile.region || 'Не указано'}
+                  </span>
+                </div>
+                <div className={styles.infoItem}>
+                  <img src={man} alt="man" />
+                  <span className={styles.label}>Цена за консультацию:</span>
+                  <span className={styles.value}>
+                    {displayUser.LawyerProfile.price ? `${displayUser.LawyerProfile.price} ₽` : 'Не указано'}
+                  </span>
+                </div>
+                <div className={styles.infoItem}>
+                  <img src={man} alt="man" />
+                  <span className={styles.label}>Статус профиля:</span>
+                  <span className={styles.value}>
+                    {displayUser.LawyerProfile.isConfirmed ? 'Подтверждён' : 'Не подтверждён'}
+                  </span>
+                </div>
+              </div>
+            </>
+          )}
+          {isClient && (
+            <div className={styles.infoList}>
               <div className={styles.infoItem}>
-                <span className={styles.label}>Специализация:</span>
+                <img src={man} alt="man" />
+                <span className={styles.label}>Возраст:</span>
                 <span className={styles.value}>
-                  {displayUser.LawyerProfile.Specializations?.length > 0
-                    ? displayUser.LawyerProfile.Specializations.join(', ')
-                    : 'Не указана'}
-                </span>
-              </div>
-              <div className={styles.infoItem}>
-                <span className={styles.label}>Регион:</span>
-                <span className={styles.value}>{displayUser.LawyerProfile.region || 'Не указано'}</span>
-              </div>
-              <div className={styles.infoItem}>
-                <span className={styles.label}>Образование:</span>
-                <span className={styles.value}>{displayUser.LawyerProfile.education || 'Не указано'}</span>
-              </div>
-              <div className={styles.infoItem}>
-                <span className={styles.label}>Цена за консультацию:</span>
-                <span className={styles.value}>
-                  {displayUser.LawyerProfile.price ? `${displayUser.LawyerProfile.price} ₽` : 'Не указана'}
-                </span>
-              </div>
-              <div className={styles.infoItem}>
-                <span className={styles.label}>Опыт с:</span>
-                <span className={styles.value}>
-                  {displayUser.LawyerProfile.experienceStartDate
-                    ? new Date(displayUser.LawyerProfile.experienceStartDate).toLocaleDateString('ru-RU')
+                  {displayUser.birthDate
+                    ? new Date().getFullYear() - new Date(displayUser.birthDate).getFullYear()
                     : 'Не указано'}
                 </span>
               </div>
-              <div className={styles.infoItem}>
-                <span className={styles.label}>Статус профиля:</span>
-                <span className={styles.value}>
-                  {displayUser.LawyerProfile.isConfirmed ? 'Подтверждён' : 'Не подтверждён'}
-                </span>
-              </div>
-              {displayUser.LawyerProfile.aboutMe && (
-                <div className={styles.infoItem}>
-                  <span className={styles.label}>О себе:</span>
-                  <p className={styles.bio}>{displayUser.LawyerProfile.aboutMe}</p>
-                </div>
-              )}
-            </>
+            </div>
           )}
           {!accessToken && (
             <div className={styles.loginPrompt}>

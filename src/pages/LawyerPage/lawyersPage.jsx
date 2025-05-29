@@ -41,7 +41,7 @@ const Lawyers = () => {
         const transformedLawyers = data.map(lawyer => ({
           id: lawyer.id,
           name: `${lawyer.firstName} ${lawyer.lastName} ${lawyer.patronymic || ''}`.trim(),
-          specialization: lawyer.LawyerProfile?.aboutMe || availableSpecializations[0], // Fallback to first specialization if none provided
+          specialization: lawyer.LawyerProfile?.Specializations || availableSpecializations[0], // Fallback to first specialization if none provided
           city: lawyer.LawyerProfile?.region || 'Unknown',
           avatar: lawyer.avatar_url || '/default-avatar.png',
           rating: 0, // Rating not provided in API response, using 0 as default
