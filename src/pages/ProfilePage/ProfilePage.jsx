@@ -57,6 +57,7 @@ const Profile = () => {
       setError(err.message);
     } finally {
       setIsLoading(false);
+      console.log(profileData)
     }
   }, [accessToken, userId, user, fetchWithAuth, getUserInfo, initForm]);
 
@@ -242,9 +243,9 @@ const Profile = () => {
         </Button>
       )}
       {userId && (
-        <div>
-          <FeedbackForm/>
-        </div>
+        <Box>
+          <FeedbackForm callBack={fetchWithAuth}/>
+        </Box>
       )}
 
     </>
