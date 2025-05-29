@@ -16,7 +16,6 @@ test('Interactivity', async ({page}) => {
 	const password = '123454321'
 	await page.getByRole('textbox', { name: 'Почта' }).fill(mail)
 	await page.getByRole('textbox', { name: 'Пароль' }).fill(password)
-	await page.getByRole('button', { name: 'Показать пароль' }).click()
 	await expect(page.getByRole('textbox', { name: 'Пароль' })).toHaveValue(password)
 	await expect(page.getByRole('textbox', { name: 'Почта' })).toHaveValue(mail)
 })
