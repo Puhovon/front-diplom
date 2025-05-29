@@ -1,5 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { setTokens, setUser } from '../../store/registrationSlice.js';
 import styles from '@styles/loginPage.module.css';
 import logo from '@assets/icons/logo_blue.png';
 import Input from '@components/Input/index.jsx';
@@ -8,16 +10,15 @@ import useAuth from '@hooks/useAuth';
 
 const Login = () => {
   const navigate = useNavigate();
-  const { setAuthTokens, setAuthUser, authError } = useAuth();
-
+  const dispatch = useDispatch();
+  const { error, isLoading, fetchWithoutAuth } = useAuth();
 
   const [formData, setFormData] = useState({
     email: '',
     password: '',
   });
-  const [errors, setErrors] = useState({});
+  const [formErrors, setFormErrors] = useState({});
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
 
   const validateForm = () => {
     const newErrors = {};
@@ -34,61 +35,50 @@ const Login = () => {
       newErrors.password = 'Пароль должен быть от 8 до 32 символов';
     }
 
-    setErrors(newErrors);
+    setFormErrors(newErrors);
     setIsModalOpen(Object.keys(newErrors).length > 0);
     return Object.keys(newErrors).length === 0;
   };
 
-
   const handleInputChange = (e) => {
     const { id, value } = e.target;
     setFormData((prev) => ({ ...prev, [id]: value }));
-    setErrors((prev) => ({ ...prev, [id]: '' }));
+    setFormErrors((prev) => ({ ...prev, [id]: '' }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
 
-    setIsLoading(true);
-    const userData = {
-      email: formData.email,
-      password: formData.password,
-    };
-
     try {
-      const response = await fetch('http://localhost:3000/api/v1/auth/login', {
+      const response = await fetchWithoutAuth('http://localhost:3000/api/v1/auth/login', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(userData),
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+        }),
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Неверный email или пароль');
-      }
-
       const result = await response.json();
-      const { accessToken, refreshToken, user } = result;
-      if (accessToken) {
-        setAuthTokens({ accessToken, refreshToken });
-        setAuthUser({ ...user, role: user.role || 'client' });
-      }
+      const { user, accessToken, refreshToken } = result;
+
+      dispatch(setTokens({ accessToken, refreshToken }));
+      dispatch(setUser(user));
+
       setFormData({ email: '', password: '' });
-      setErrors({});
+      setFormErrors({});
       setIsModalOpen(false);
       navigate(user.role === 'lawyer' ? '/' : '/');
-    } catch (error) {
-      console.error('Ошибка:', error.message);
-      setErrors({ server: error.message || 'Ошибка отправки данных на сервер' });
+    } catch (err) {
+      console.error('Ошибка:', err.message);
+      setFormErrors({ server: err.message || 'Ошибка отправки данных на сервер' });
       setIsModalOpen(true);
-    } finally {
-      setIsLoading(false);
     }
   };
 
   const closeModal = () => {
     setIsModalOpen(false);
+    setFormErrors({});
   };
 
   return (
@@ -98,7 +88,9 @@ const Login = () => {
       </Link>
       <div className={styles.leftWrapper}>
         <h3 className={styles.logIn}>Войти</h3>
-        {authError && <p className={styles.authError}>{authError}</p>}
+        {(error || formErrors.server) && (
+          <p className={styles.authError}>{error || formErrors.server}</p>
+        )}
         <form className={styles.loginForm} onSubmit={handleSubmit}>
           <Input
             id="email"
@@ -106,7 +98,7 @@ const Login = () => {
             type="email"
             value={formData.email}
             onChange={handleInputChange}
-            error={errors.email}
+            error={formErrors.email}
             placeholder="Введите электронную почту"
             disabled={isLoading}
           />
@@ -116,7 +108,7 @@ const Login = () => {
             type="password"
             value={formData.password}
             onChange={handleInputChange}
-            error={errors.password}
+            error={formErrors.password}
             placeholder="Введите пароль"
             disabled={isLoading}
           />
@@ -133,7 +125,7 @@ const Login = () => {
             Зарегистрироваться
           </Link>
         </div>
-        <Modal isOpen={isModalOpen} errors={errors} onClose={closeModal} />
+        <Modal isOpen={isModalOpen} errors={formErrors} onClose={closeModal} />
       </div>
       <div className={styles.rightWrapper} />
     </div>

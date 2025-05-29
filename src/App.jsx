@@ -10,7 +10,7 @@ import Lawyers from '@pages/LawyerPage/lawyersPage.jsx';
 import Login from '@pages/LoginPage/LoginPage.jsx';
 import Services from '@pages/servicesPage.jsx';
 import RefreshPassword from '@pages/RefreshPassword/RefreshPassword.jsx';
-import { store } from '../src/store/store.js';
+import { store } from '../src/store/index.js';
 
 import '@styles/global.css';
 import '@styles/variables.css';
