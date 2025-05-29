@@ -1,34 +1,67 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { setUser, setTokens, logout, setAuthError, restoreSession } from '../store/registrationSlice.js';
+import { setUser, setTokens, logout } from '../store/registrationSlice.js';
 
 const useAuth = () => {
   const dispatch = useDispatch();
-  const { user, accessToken, refreshToken, authError } = useSelector((state) => state.registration);
-  const [isRefreshing, setIsRefreshing] = useState(false);
-  const [isAppLoading, setIsAppLoading] = useState(true); 
-  const isInitialLoad = useRef(true); 
+  const { user, accessToken, refreshToken } = useSelector((state) => state.registration);
+  const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Восстановление сессии при инициализации
+  // Очистка ошибок при размонтировании
   useEffect(() => {
-    if (isInitialLoad.current) {
-      const savedUser = localStorage.getItem('authUser');
-      const savedAccessToken = localStorage.getItem('accessToken');
-      const savedRefreshToken = localStorage.getItem('refreshToken');
+    return () => setError(null);
+  }, []);
 
-      if (savedAccessToken && savedRefreshToken) {
-        dispatch(restoreSession({
-          user: savedUser ? JSON.parse(savedUser) : null,
-          accessToken: savedAccessToken,
-          refreshToken: savedRefreshToken,
-        }));
+  // Восстановление сессии
+  useEffect(() => {
+    let isMounted = true; // Флаг для проверки mounted компонента
+
+    const restoreSession = async () => {
+      setIsLoading(true);
+      setError(null);
+      
+      try {
+        const savedAccessToken = localStorage.getItem('accessToken');
+        const savedRefreshToken = localStorage.getItem('refreshToken');
+        const savedUser = localStorage.getItem('authUser');
+
+        if (savedAccessToken && savedRefreshToken) {
+          dispatch(setTokens({ 
+            accessToken: savedAccessToken, 
+            refreshToken: savedRefreshToken 
+          }));
+          
+          if (savedUser) {
+            try {
+              const parsedUser = JSON.parse(savedUser);
+              dispatch(setUser(parsedUser));
+            } catch (parseError) {
+              console.error('Ошибка парсинга пользователя:', parseError);
+              localStorage.removeItem('authUser');
+            }
+          }
+        }
+      } catch (err) {
+        console.error('Ошибка восстановления сессии:', err);
+        if (isMounted) {
+          setError('Не удалось восстановить сессию');
+        }
+      } finally {
+        if (isMounted) {
+          setIsLoading(false);
+        }
       }
-      setIsAppLoading(false); 
-      isInitialLoad.current = false; 
-    }
+    };
+
+    restoreSession();
+
+    return () => {
+      isMounted = false; // Очистка при размонтировании
+    };
   }, [dispatch]);
 
-  // Сохранение состояния в localStorage при изменении
+  // Синхронизация с localStorage
   useEffect(() => {
     if (accessToken) {
       localStorage.setItem('accessToken', accessToken);
@@ -49,126 +82,71 @@ const useAuth = () => {
     }
   }, [accessToken, refreshToken, user]);
 
-
-  const setAuthTokens = (tokens) => {
-    dispatch(setTokens(tokens));
-  };
-
-  const setAuthUser = (userData) => {
-    dispatch(setUser(userData));
-  };
-
-
-  const handleLogout = () => {
+  const handleLogout = useCallback(() => {
     dispatch(logout());
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
     localStorage.removeItem('authUser');
-  };
+  }, [dispatch]);
 
-
-  const refreshTokens = async () => {
-    if (isRefreshing || !refreshToken) return false;
-    setIsRefreshing(true);
-
-    try {
-      const response = await fetch('http://localhost:3000/api/v1/auth/refresh', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${refreshToken}`,
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to refresh token');
-      }
-
-      const { accessToken: newAccessToken, refreshToken: newRefreshToken } = await response.json();
-      dispatch(setTokens({ accessToken: newAccessToken, refreshToken: newRefreshToken }));
-      return true;
-    } catch (error) {
-      console.error('Token refresh failed:', error.message);
-      dispatch(setAuthError('Failed to refresh token. Please log in again.'));
-      handleLogout();
-      return false;
-    } finally {
-      setIsRefreshing(false);
-    }
-  };
-
-  // Функция для выполнения авторизованного запроса
-  const fetchWithAuth = async (url, options = {}) => {
+  const fetchWithAuth = useCallback(async (url, options = {}) => {
     if (!accessToken) {
-      dispatch(setAuthError('No access token available. Please log in.'));
+      setError('Требуется авторизация');
       handleLogout();
-      throw new Error('No access token');
+      throw new Error('Нет токена доступа');
     }
 
     const headers = {
       ...options.headers,
-      'Authorization': `Bearer ${accessToken}`,
+      Authorization: `Bearer ${accessToken}`,
       'Content-Type': 'application/json',
     };
 
-    const response = await fetch(url, { ...options, headers });
-
-    if (response.status === 401) {
-      const refreshed = await refreshTokens();
-      if (refreshed) {
-        const newHeaders = {
-          ...options.headers,
-          'Authorization': `Bearer ${accessToken}`,
-          'Content-Type': 'application/json',
-        };
-        return fetch(url, { ...options, headers: newHeaders });
-      } else {
-        throw new Error('Token refresh failed');
-      }
-    }
-
-    return response;
-  };
-
-  const getUserInfo = async () => {
     try {
-      const response = await fetchWithAuth('http://localhost:3000/api/v1/users/me', {
-        method: 'GET',
-      });
-
+      const response = await fetch(url, { ...options, headers });
+      
       if (!response.ok) {
-        throw new Error('Failed to fetch user info');
+        if (response.status === 401) {
+          setError('Сессия истекла. Войдите заново.');
+          handleLogout();
+        }
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(
+          errorData.message || `Ошибка запроса: ${response.status}`
+        );
       }
 
+      return response;
+    } catch (err) {
+      console.error('Ошибка fetchWithAuth:', err);
+      setError(err.message || 'Ошибка сети');
+      throw err;
+    }
+  }, [accessToken, handleLogout]);
+
+  const getUserInfo = useCallback(async () => {
+    try {
+      const response = await fetchWithAuth('http://localhost:3000/api/v1/users/me', { 
+        method: 'GET' 
+      });
       const userData = await response.json();
-      dispatch(setUser(userData)); // Обновляем данные пользователя в Redux
+      dispatch(setUser(userData));
       return userData;
-    } catch (error) {
-      console.error('Error fetching user info:', error.message);
-      dispatch(setAuthError('Failed to fetch user info. Please log in again.'));
+    } catch (err) {
+      console.error('Ошибка getUserInfo:', err);
+      setError('Не удалось загрузить данные пользователя');
       return null;
     }
-  };
+  }, [dispatch, fetchWithAuth]);
 
-
-  useEffect(() => {
-    if (accessToken && authError) {
-      dispatch(setAuthError(null));
-    }
-  }, [accessToken, authError, dispatch]);
-
-  return {
-    user,
-    accessToken,
-    refreshToken,
-    authError,
-    setAuthTokens,
-    setAuthUser,
-    handleLogout,
-    fetchWithAuth,
-    isRefreshing,
-    isAppLoading,
-    getUserInfo,
+  return { 
+    user, 
+    accessToken, 
+    error, 
+    isLoading, 
+    handleLogout, 
+    fetchWithAuth, 
+    getUserInfo 
   };
 };
 

@@ -1,300 +1,263 @@
-import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import React, { useEffect, useState, useCallback } from 'react';
+import { useParams, Link } from 'react-router-dom';
 import useAuth from '@hooks/useAuth';
-import { Avatar, CircularProgress, Alert, AlertTitle, Fade } from '@mui/material';
+import { 
+  Avatar, CircularProgress, Alert, Fade, 
+  TextField, Button, Select, MenuItem, 
+  FormControl, InputLabel, Typography, Box 
+} from '@mui/material';
 import styles from './Profile.module.css';
 import defaultAvatar from '@assets/icons/default-avatar.png';
 import man from '@assets/icons/lawyers/man.png';
 
 const Profile = () => {
   const { userId } = useParams();
-  const { user, accessToken, getUserInfo } = useAuth();
-  const navigate = useNavigate();
+  const { user, accessToken, fetchWithAuth, getUserInfo, isLoading: authLoading, error: authError } = useAuth();
   const [profileData, setProfileData] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isTokenLoading, setIsTokenLoading] = useState(true);
-  const [isUserInfoLoading, setIsUserInfoLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
+  
+  // Инициализация формы редактирования
+  const initForm = useCallback((data) => ({
+    firstName: data?.firstName || '',
+    lastName: data?.lastName || '',
+    patronymic: data?.patronymic || '',
+    birthDate: data?.birthDate || '',
+    gender: data?.gender || '',
+    aboutMe: data?.LawyerProfile?.aboutMe || '',
+    education: data?.LawyerProfile?.education || '',
+    experienceStartDate: data?.LawyerProfile?.experienceStartDate || '',
+    region: data?.LawyerProfile?.region || '',
+    price: data?.LawyerProfile?.price || '',
+  }), []);
 
-  // Проверка токена
+  const [editForm, setEditForm] = useState(initForm(null));
+
+  // Загрузка профиля
+  const loadProfile = useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      if (!accessToken && !userId) throw new Error('Требуется авторизация');
+
+      let data;
+      if (userId) {
+        const response = await fetchWithAuth(`http://localhost:3000/api/v1/users/${userId}`);
+        data = await response.json();
+      } else {
+        data = user || (await getUserInfo());
+        if (!data) throw new Error('Не удалось загрузить данные пользователя');
+        setEditForm(initForm(data));
+      }
+      setProfileData(data);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [accessToken, userId, user, fetchWithAuth, getUserInfo, initForm]);
+
   useEffect(() => {
-    const checkToken = async () => {
-      try {
-        if (accessToken === undefined || accessToken === null) {
-          await new Promise((resolve) => setTimeout(resolve, 500));
-        }
-      } catch (err) {
-        console.error('Ошибка проверки токена:', err);
-        setError('Ошибка проверки авторизации');
-      } finally {
-        setIsTokenLoading(false);
-      }
-    };
-    checkToken();
-  }, [accessToken]);
+    if (!authLoading) loadProfile();
+  }, [authLoading, loadProfile]);
 
-  // Загрузка данных профиля
-  useEffect(() => {
-    const fetchProfileData = async () => {
-      if (isTokenLoading) return;
+  // Сохранение изменений
+  const handleSaveChanges = useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
 
-      if (!userId && !accessToken) {
-        navigate('/login');
-        return;
-      }
-
-      setIsLoading(true);
-      setError(null);
-
-      try {
-        if (userId) {
-          const headers = {
-            'Content-Type': 'application/json',
-          };
-          if (accessToken) {
-            headers['Authorization'] = `Bearer ${accessToken}`;
+    try {
+      const isClient = profileData?.role === 'client';
+      const body = {
+        firstName: editForm.firstName,
+        lastName: editForm.lastName,
+        patronymic: editForm.patronymic,
+        birthDate: editForm.birthDate,
+        gender: editForm.gender,
+        ...(!isClient && {
+          LawyerProfile: {
+            aboutMe: editForm.aboutMe,
+            education: editForm.education,
+            experienceStartDate: editForm.experienceStartDate,
+            region: editForm.region,
+            price: editForm.price ? parseFloat(editForm.price) : null,
           }
-          const response = await fetch(`http://localhost:3000/api/v1/users/${userId}`, {
-            method: 'GET',
-            headers,
-          });
-          if (!response.ok) {
-            if (response.status === 401) {
-              throw new Error('Для просмотра профиля требуется авторизация');
-            }
-            throw new Error('Не удалось загрузить данные пользователя');
-          }
-          const userData = await response.json();
-          setProfileData(userData);
-        } else if (!user && !isUserInfoLoading) {
-          setIsUserInfoLoading(true);
-          console.log('Вызываем getUserInfo для текущего пользователя');
-          await getUserInfo();
-          setIsUserInfoLoading(false);
-        }
-      } catch (error) {
-        setError(error.message);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+        })
+      };
 
-    fetchProfileData();
-  }, [userId, accessToken, navigate, isTokenLoading]);
+      const response = await fetchWithAuth('http://localhost:3000/api/v1/users/me', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
 
-  // Отображение загрузки токена
-  if (isTokenLoading) {
-    return (
-      <Fade in={true} timeout={500}>
-        <div className={styles.loadingContainer}>
-          <CircularProgress size={40} thickness={4} />
-          <p className={styles.loadingText}>Проверка авторизации...</p>
-        </div>
-      </Fade>
-    );
-  }
+      const updatedUser = await response.json();
+      setProfileData(updatedUser);
+      setIsEditing(false);
+      await getUserInfo();
+    } catch (err) {
+      setError(err.message || 'Не удалось сохранить изменения');
+    } finally {
+      setIsLoading(false);
+    }
+  }, [editForm, profileData, fetchWithAuth, getUserInfo]);
 
-  // Требуется авторизация
-  if (!userId && !accessToken) {
-    return (
-      <Fade in={true} timeout={500}>
-        <Alert severity="warning" className={styles.alert}>
-          <AlertTitle>Требуется авторизация</AlertTitle>
-          Пожалуйста,{' '}
-          <Link to="/login" className={styles.alertLink}>
-            войдите
-          </Link>{' '}
-          для просмотра своего профиля.
-        </Alert>
-      </Fade>
-    );
-  }
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setEditForm(prev => ({ ...prev, [name]: value }));
+  };
 
-  // Отображение загрузки данных
-  if (isLoading || isUserInfoLoading) {
-    return (
-      <Fade in={true} timeout={500}>
-        <div className={styles.loadingContainer}>
-          <CircularProgress size={40} thickness={4} />
-          <p className={styles.loadingText}>Загрузка профиля...</p>
-        </div>
-      </Fade>
-    );
-  }
+  // Вспомогательные функции для рендеринга
+  const renderLoading = () => (
+    <Fade in timeout={500}>
+      <div className={styles.loadingContainer}>
+        <CircularProgress size={40} thickness={4} />
+        <Typography className={styles.loadingText}>Загрузка...</Typography>
+      </div>
+    </Fade>
+  );
 
-  // Отображение ошибки
-  if (error) {
-    return (
-      <Fade in={true} timeout={500}>
-        <Alert severity="error" className={styles.alert}>
-          <AlertTitle>Ошибка</AlertTitle>
-          {error}
-          {error.includes('авторизация') && (
-            <p>
-              Попробуйте{' '}
-              <Link to="/login" className={styles.alertLink}>
-                войти
-              </Link>{' '}
-              заново.
-            </p>
-          )}
-        </Alert>
-      </Fade>
-    );
-  }
+  const renderError = (message) => (
+    <Fade in timeout={500}>
+      <Alert severity="error" className={styles.alert}>
+        <Typography variant="h6">Ошибка</Typography>
+        {message}
+        <Typography>
+          <Link to="/login" className={styles.alertLink}>Войдите</Link> заново.
+        </Typography>
+      </Alert>
+    </Fade>
+  );
 
-  // Определяем данные для отображения
-  const displayUser = userId ? profileData : user;
+  if (authLoading || isLoading) return renderLoading();
+  if (error || authError) return renderError(error || authError);
+  if (!profileData) return renderError('Профиль не найден');
 
-  // Если данные не загружены
-  if (!displayUser) {
-    return (
-      <Fade in={true} timeout={500}>
-        <Alert severity="info" className={styles.alert}>
-          <AlertTitle>Данные не найдены</AlertTitle>
-          Данные пользователя не найдены. Попробуйте обновить страницу или{' '}
-          <Link to="/login" className={styles.alertLink}>
-            войти
-          </Link>{' '}
-          заново.
-        </Alert>
-      </Fade>
-    );
-  }
+  const isClient = profileData.role === 'client';
+  const { LawyerProfile } = profileData;
 
-  // Проверяем, является ли пользователь клиентом
-  const isClient = displayUser.role === 'client';
+  // Рендер элементов информации
+  const renderInfoItem = (icon, label, value, transformFn = v => v) => (
+    <div className={styles.infoItem}>
+      <img src={icon} alt={`Иконка ${label}`} />
+      <Typography className={styles.label}>{label}:</Typography>
+      <Typography className={styles.value}>{transformFn(value) || 'Не указано'}</Typography>
+    </div>
+  );
+
+  // Рендер формы редактирования
+  const renderEditForm = () => (
+    <>
+      <TextField name="firstName" label="Имя" value={editForm.firstName} onChange={handleInputChange} fullWidth margin="normal" />
+      <TextField name="lastName" label="Фамилия" value={editForm.lastName} onChange={handleInputChange} fullWidth margin="normal" />
+      <TextField name="patronymic" label="Отчество" value={editForm.patronymic} onChange={handleInputChange} fullWidth margin="normal" />
+      
+      {isClient ? (
+        <>
+          <TextField name="birthDate" label="Дата рождения" type="date" 
+            value={editForm.birthDate} onChange={handleInputChange} fullWidth margin="normal" 
+            InputLabelProps={{ shrink: true }} />
+          <FormControl fullWidth margin="normal">
+            <InputLabel>Пол</InputLabel>
+            <Select name="gender" value={editForm.gender} onChange={handleInputChange} label="Пол">
+              <MenuItem value="male">Мужской</MenuItem>
+              <MenuItem value="female">Женский</MenuItem>
+            </Select>
+          </FormControl>
+        </>
+      ) : (
+        <>
+          <TextField name="aboutMe" label="О себе" multiline rows={4} 
+            value={editForm.aboutMe} onChange={handleInputChange} fullWidth margin="normal" />
+          <TextField name="education" label="Образование" 
+            value={editForm.education} onChange={handleInputChange} fullWidth margin="normal" />
+          <TextField name="experienceStartDate" label="Дата начала опыта" type="date"
+            value={editForm.experienceStartDate} onChange={handleInputChange} fullWidth margin="normal"
+            InputLabelProps={{ shrink: true }} />
+          <TextField name="region" label="Регион" 
+            value={editForm.region} onChange={handleInputChange} fullWidth margin="normal" />
+          <TextField name="price" label="Цена (₽)" type="number" 
+            value={editForm.price} onChange={handleInputChange} fullWidth margin="normal" />
+        </>
+      )}
+      
+      <Box mt={2}>
+        <Button variant="contained" color="primary" onClick={handleSaveChanges} disabled={isLoading}>
+          {isLoading ? <CircularProgress size={24} /> : 'Сохранить'}
+        </Button>
+        <Button variant="outlined" color="secondary" onClick={() => setIsEditing(false)} sx={{ ml: 1 }}>
+          Отмена
+        </Button>
+      </Box>
+    </>
+  );
+
+  // Рендер просмотра профиля
+  const renderProfileView = () => (
+    <>
+      <Typography variant="h4" className={styles.title}>
+        {`${profileData.lastName || ''} ${profileData.firstName || ''} ${profileData.patronymic || ''}`}
+      </Typography>
+      
+      {!isClient && LawyerProfile && (
+        <>
+          <Typography className={styles.subtitle}>
+            Специализация: {LawyerProfile.Specializations?.join(', ') || 'Не указана'}
+          </Typography>
+          <Typography className={styles.rating}>4.5 ★</Typography>
+        </>
+      )}
+      
+      <div className={styles.description}>
+        <Typography variant="h5" className={styles.sectionTitle}>О себе</Typography>
+        <Typography>{LawyerProfile?.aboutMe || 'Нет информации'}</Typography>
+      </div>
+      
+      <div className={styles.infoList}>
+        {renderInfoItem(man, 'Возраст', profileData.birthDate, 
+          date => date ? new Date().getFullYear() - new Date(date).getFullYear() : null)}
+        
+        {isClient && renderInfoItem(man, 'Пол', profileData.gender, 
+          gender => gender === 'male' ? 'Мужской' : gender === 'female' ? 'Женский' : null)}
+        
+        {!isClient && LawyerProfile && (
+          <>
+            {renderInfoItem(man, 'Специализация', LawyerProfile.Specializations?.join(', '))}
+            {renderInfoItem(man, 'Образование', LawyerProfile.education)}
+            {renderInfoItem(man, 'Опыт работы', LawyerProfile.experienceStartDate, 
+              date => date ? `${new Date().getFullYear() - new Date(date).getFullYear()} лет` : null)}
+            {renderInfoItem(man, 'Регион', LawyerProfile.region)}
+            {renderInfoItem(man, 'Цена', LawyerProfile.price, price => price ? `${price} ₽` : null)}
+            {renderInfoItem(man, 'Статус', LawyerProfile.isConfirmed, isConfirmed => isConfirmed ? 'Подтверждён' : 'Не подтверждён')}
+          </>
+        )}
+      </div>
+      
+      {!userId && (
+        <Button variant="contained" color="primary" onClick={() => setIsEditing(true)} sx={{ mt: 2 }}>
+          Редактировать профиль
+        </Button>
+      )}
+    </>
+  );
 
   return (
-    <div className={styles.profileContainer}>
-      <div className={styles.profileCard}>
-        <div className={styles.avatarSection}>
+    <Box className={styles.profileContainer}>
+      <Box className={styles.profileCard}>
+        <Box className={styles.avatarSection}>
           <Avatar
             alt="Аватар пользователя"
-            src={displayUser.avatar_url || defaultAvatar}
-            sx={{
-              width: 150,
-              height: 150,
-              border: '2px solid #e0e0e0',
-              '@media (max-width: 768px)': {
-                width: 120,
-                height: 120,
-              },
-            }}
+            src={profileData.avatar_url || defaultAvatar}
+            sx={{ width: 150, height: 150, border: '2px solid #e0e0e0' }}
           />
-        </div>
-        <div className={styles.infoSection}>
-          <h1 className={styles.title}>
-            {displayUser.firstName} {displayUser.lastName} {displayUser.patronymic}
-          </h1>
-          {!isClient && (
-            <>
-              <p className={styles.subtitle}>
-                Специализация:{' '}
-                {displayUser.LawyerProfile?.Specializations?.length > 0
-                  ? displayUser.LawyerProfile.Specializations.join(', ')
-                  : 'Не указана'}
-              </p>
-              <span className={styles.rating}>4.5 ★</span>
-            </>
-          )}
-          <div className={styles.description}>
-            <h2 className={styles.sectionTitle}>О себе</h2>
-            <p>{displayUser.LawyerProfile?.aboutMe || 'Информация о пользователе отсутствует'}</p>
-          </div>
-          {!isClient && displayUser.LawyerProfile && (
-            <>
-              <h2 className={styles.sectionTitle}>Данные специалиста</h2>
-              <div className={styles.infoList}>
-                <div className={styles.infoItem}>
-                  <img src={man} alt="man" />
-                  <span className={styles.label}>Возраст:</span>
-                  <span className={styles.value}>
-                    {displayUser.birthDate
-                      ? new Date().getFullYear() - new Date(displayUser.birthDate).getFullYear()
-                      : 'Не указано'}
-                  </span>
-                </div>
-                <div className={styles.infoItem}>
-                  <img src={man} alt="man" />
-                  <span className={styles.label}>Специализация:</span>
-                  <span className={styles.value}>
-                    {displayUser.LawyerProfile.Specializations?.length > 0
-                      ? displayUser.LawyerProfile.Specializations.join(', ')
-                      : 'Не указана'}
-                  </span>
-                </div>
-                <div className={styles.infoItem}>
-                  <img src={man} alt="man" />
-                  <span className={styles.label}>Образование:</span>
-                  <span className={styles.value}>
-                    {displayUser.LawyerProfile.education || 'Не указано'}
-                  </span>
-                </div>
-                <div className={styles.infoItem}>
-                  <img src={man} alt="man" />
-                  <span className={styles.label}>Опыт работы:</span>
-                  <span className={styles.value}>
-                    {displayUser.LawyerProfile.experienceStartDate
-                      ? `${new Date().getFullYear() - new Date(displayUser.LawyerProfile.experienceStartDate).getFullYear()} лет`
-                      : 'Не указано'}
-                  </span>
-                </div>
-                <div className={styles.infoItem}>
-                  <img src={man} alt="man" />
-                  <span className={styles.label}>Регион:</span>
-                  <span className={styles.value}>
-                    {displayUser.LawyerProfile.region || 'Не указано'}
-                  </span>
-                </div>
-                <div className={styles.infoItem}>
-                  <img src={man} alt="man" />
-                  <span className={styles.label}>Цена за консультацию:</span>
-                  <span className={styles.value}>
-                    {displayUser.LawyerProfile.price ? `${displayUser.LawyerProfile.price} ₽` : 'Не указано'}
-                  </span>
-                </div>
-                <div className={styles.infoItem}>
-                  <img src={man} alt="man" />
-                  <span className={styles.label}>Статус профиля:</span>
-                  <span className={styles.value}>
-                    {displayUser.LawyerProfile.isConfirmed ? 'Подтверждён' : 'Не подтверждён'}
-                  </span>
-                </div>
-              </div>
-            </>
-          )}
-          {isClient && (
-            <div className={styles.infoList}>
-              <div className={styles.infoItem}>
-                <img src={man} alt="man" />
-                <span className={styles.label}>Возраст:</span>
-                <span className={styles.value}>
-                  {displayUser.birthDate
-                    ? new Date().getFullYear() - new Date(displayUser.birthDate).getFullYear()
-                    : 'Не указано'}
-                </span>
-              </div>
-            </div>
-          )}
-          {!accessToken && (
-            <div className={styles.loginPrompt}>
-              <p>
-                Чтобы связаться с пользователем,{' '}
-                <Link to="/login" className={styles.loginLink}>
-                  войдите
-                </Link>{' '}
-                или{' '}
-                <Link to="/registration" className={styles.loginLink}>
-                  зарегистрируйтесь
-                </Link>
-                .
-              </p>
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
+        </Box>
+        <Box className={styles.infoSection}>
+          {isEditing && !userId ? renderEditForm() : renderProfileView()}
+        </Box>
+      </Box>
+    </Box>
   );
 };
 

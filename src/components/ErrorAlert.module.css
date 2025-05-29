@@ -1,0 +1,14 @@
+.alert {
+  max-width: 600px;
+  margin: 20px auto;
+  padding: 15px;
+}
+
+.alertLink {
+  color: #1976d2;
+  text-decoration: none;
+}
+
+.alertLink:hover {
+  text-decoration: underline;
+}

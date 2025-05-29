@@ -144,16 +144,12 @@ const Header = () => {
                   alt="User Avatar"
                   className={styles.avatar}
                 />
-                <span className={styles.userName}>{displayName}</span>
                 <img src={strel} alt="Вниз" />
               </div>
               <div className={styles.dropdownContent}>
-                <Link to="/profile" className={styles.dropdownItem}>
+                <Link  onClick={fetchUser} to="/profile" className={styles.dropdownItem}>
                   <img src={profile} alt="user" /> Профиль
                 </Link>
-                <button onClick={fetchUser} className={styles.dropdownItem}>
-                  Обновить данные
-                </button>
                 <button onClick={handleLogout} className={styles.dropdownItem}>
                   <img src={exit} alt="exit" />
                   Выход
