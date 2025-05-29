@@ -8,6 +8,7 @@ import {
 import styles from './Profile.module.css';
 import defaultAvatar from '@assets/icons/default-avatar.png';
 import man from '@assets/icons/lawyers/man.png';
+import FeedbackForm from '@components/FeedBackForm/feedBackForm';
 
 const ProfilePage = () => {
   const { userId } = useParams();
@@ -47,6 +48,7 @@ const ProfilePage = () => {
       setError(err.message);
     } finally {
       setIsLoading(false);
+      console.log(profileData)
     }
   }, [accessToken, userId, fetchWithAuth]);
 
@@ -193,6 +195,12 @@ const ProfilePage = () => {
           </Button>
         </Box>
       )}
+      {userId && (
+        <Box>
+          <FeedbackForm callBack={fetchWithAuth}/>
+        </Box>
+      )}
+
     </>
   );
 
