@@ -9,6 +9,7 @@ import styles from './Profile.module.css';
 import defaultAvatar from '@assets/icons/default-avatar.svg';
 import man from '@assets/icons/lawyers/man.png';
 import FeedbackForm from '@components/FeedBackForm/feedBackForm';
+import Reviews from '@components/Reviews/Reviews';
 
 const ProfilePage = () => {
   const { userId } = useParams();
@@ -31,13 +32,13 @@ const ProfilePage = () => {
     region: data?.LawyerProfile?.region || '',
     price: data?.LawyerProfile?.price || '',
   }), []);
-  console.log(user);
   const [editForm, setEditForm] = useState(initForm(null));
 
   const onReviewSubmit = (message) => {
     fetchWithAuth('http://localhost:3000/api/v1/lawyers/1/reviews', {
       method: 'POST',
-      body: JSON.stringify(message)}
+      body: JSON.stringify(message)
+    }
     )
   }
 
@@ -72,7 +73,6 @@ const ProfilePage = () => {
       setError(err.message);
     } finally {
       setIsLoading(false);
-      console.log(profileData)
     }
   }, [accessToken, userId, fetchWithAuth]);
 
@@ -198,7 +198,6 @@ const ProfilePage = () => {
           </>
         )}
       </div>
-
       {!userId && (
         <Box sx={{ mt: 2, display: 'flex', gap: 2 }}>
           <Button
@@ -219,10 +218,13 @@ const ProfilePage = () => {
           </Button>
         </Box>
       )}
-      {userId && user.role =='client' && (
+      {userId && user.role == 'client' && (
         <Box>
-          <FeedbackForm callBack={onReviewSubmit}/>
+          <FeedbackForm callBack={onReviewSubmit} />
         </Box>
+      )}
+      {userId && profileData.role == 'lawyer' && (
+        <Reviews reviews={profileData.LawyerProfile.reviews}/>
       )}
 
     </>

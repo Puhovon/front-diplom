@@ -26,7 +26,6 @@ const EditProfile = () => {
     education: '',
     experienceStartDate: '',
     region: '',
-    price: '',
   });
   const [error, setError] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -42,7 +41,6 @@ const EditProfile = () => {
     education: data?.LawyerProfile?.education || '',
     experienceStartDate: data?.LawyerProfile?.experienceStartDate?.split('T')[0] || '',
     region: data?.LawyerProfile?.region || '',
-    price: data?.LawyerProfile?.price || '',
   }), []);
 
   // Load profile data
@@ -75,7 +73,7 @@ const EditProfile = () => {
 
     try {
       const isClient = profileData?.role === 'client';
-      const body = {
+      let body = {
         firstName: formValues.firstName.trim(),
         lastName: formValues.lastName.trim(),
         patronymic: formValues.patronymic.trim(),
@@ -89,17 +87,13 @@ const EditProfile = () => {
       }
 
       if (!isClient) {
-        body.LawyerProfile = {
+        body = {...body, 
           aboutMe: formValues.aboutMe.trim(),
           education: formValues.education.trim(),
           experienceStartDate: formValues.experienceStartDate,
           region: formValues.region.trim(),
-          price: formValues.price ? parseFloat(formValues.price) : null,
         };
-
-        if (body.LawyerProfile.price && isNaN(body.LawyerProfile.price)) {
-          throw new Error('Цена должна быть числом');
-        }
+        
       }
 
       await dispatch(updateProfile({
@@ -274,17 +268,6 @@ const EditProfile = () => {
                     fullWidth
                     margin="normal"
                     disabled={isSubmitting}
-                  />
-                  <TextField
-                    name="price"
-                    label="Цена (руб)"
-                    type="number"
-                    value={formValues.price}
-                    onChange={handleInputChange}
-                    fullWidth
-                    margin="normal"
-                    disabled={isSubmitting}
-                    inputProps={{ min: 0, step: 100 }}
                   />
                 </>
               )}

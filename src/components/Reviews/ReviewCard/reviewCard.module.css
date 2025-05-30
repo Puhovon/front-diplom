@@ -1,0 +1,29 @@
+/* ReviewCard.module.css */
+.card {
+  width: 100%;
+  padding: 16px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  box-sizing: border-box;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.card h2 {
+  font-size: 20px;
+  color: #ff9800; /* оранжевый цвет для рейтинга */
+  margin-bottom: 8px;
+}
+
+.card h3 {
+  font-size: 16px;
+  color: #333;
+  margin-bottom: 8px;
+  font-weight: normal;
+}
+
+.card p {
+  font-size: 14px;
+  color: #757575;
+  margin: 0;
+}

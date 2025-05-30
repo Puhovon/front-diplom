@@ -27,6 +27,7 @@ export const fetchProfile = createAsyncThunk(
 export const updateProfile = createAsyncThunk(
   'profile/updateProfile',
   async ({ payload, accessToken }, { rejectWithValue }) => {
+    console.log(payload)
     try {
       const response = await fetch(API_URLS.CURRENT_USER, {
         method: 'PATCH',
