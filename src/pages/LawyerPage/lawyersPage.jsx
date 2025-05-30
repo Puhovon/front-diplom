@@ -138,24 +138,6 @@ const Lawyers = () => {
           </div>
 
           <div className={styles.filterSection}>
-            <label className={styles.filterLabel}>Цена (₽)</label>
-            <div className={styles.sliderContainer}>
-              <Slider
-                value={priceRange}
-                onChange={handlePriceRangeChange}
-                valueLabelDisplay="auto"
-                min={0}
-                max={10000}
-                step={500}
-                className={styles.muiSlider}
-              />
-              <div className={styles.rangeValues}>
-                <span>{priceRange[0]} ₽</span> - <span>{priceRange[1]} ₽</span>
-              </div>
-            </div>
-          </div>
-
-          <div className={styles.filterSection}>
             <label className={styles.filterLabel}>Рейтинг</label>
             <div className={styles.sliderContainer}>
               <Slider
