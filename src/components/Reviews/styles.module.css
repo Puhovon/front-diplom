@@ -1,0 +1,20 @@
+/* styles.module.css для компонента с отзывами */
+.container {
+  width: 100%;
+  max-width: 100%;
+  padding: 16px;
+  box-sizing: border-box;
+}
+
+.container h2 {
+  margin-bottom: 20px;
+  font-size: 24px;
+  color: #333;
+}
+
+.container > div {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+}
