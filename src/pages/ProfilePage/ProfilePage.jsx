@@ -45,7 +45,7 @@ const ProfilePage = () => {
   const [editForm, setEditForm] = useState(initForm(null));
 
   const onReviewSubmit = (message) => {
-    fetchWithAuth('http://localhost:3000/api/v1/lawyers/1/reviews', {
+    fetchWithAuth(`http://localhost:3000/api/v1/lawyers/${userId}/reviews`, {
       method: 'POST',
       body: JSON.stringify(message)
     });
@@ -81,7 +81,6 @@ const ProfilePage = () => {
       }
     } catch (err) {
       console.error('Payment Error:', err);
-      // Проверяем, является ли ошибка SyntaxError из-за пустого ответа
       if (err instanceof SyntaxError) {
         setError('Сервер вернул некорректный или пустой ответ');
       } else {
@@ -198,7 +197,7 @@ const ProfilePage = () => {
           <Typography className={styles.rating}>{}</Typography>
         </>
       )}
-      {userId && user.role === 'client' && (
+      {userId && user.role === 'client' && profileData.role === 'lawyer' && (
         <Box sx={{ mt: 2, display: 'flex', gap: 2, justifyContent: 'center' }}>
           <Button
             variant="contained"
@@ -271,7 +270,7 @@ const ProfilePage = () => {
           </Button>
         </Box>
       )}
-      {userId && user.role === 'client' && (
+      {userId && user.role === 'client' && profileData.role === 'lawyer' && (
         <FeedbackForm callBack={onReviewSubmit} />
       )}
       {userId && profileData.role === 'lawyer' && (
