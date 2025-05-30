@@ -9,14 +9,13 @@ import Profile from '@pages/ProfilePage/ProfilePage.jsx';
 import Lawyers from '@pages/LawyerPage/lawyersPage.jsx';
 import Login from '@pages/LoginPage/LoginPage.jsx';
 import RefreshPassword from '@pages/RefreshPassword/RefreshPassword.jsx';
+import ResetPassword from '@pages/RefreshPassword/ResetPassword.jsx'; 
 import ChatPage from '@pages/ChatPage/chatPage.jsx';
 import EditProfile from './pages/ProfilePage/EditProfile.jsx';
 import Team from './pages/TeamPage.jsx/TeamPage.jsx';
 
 import '@styles/global.css';
 import '@styles/variables.css';
-
-
 
 function App() {
   return (
@@ -26,15 +25,16 @@ function App() {
           <Route element={<Layout />}>
             <Route path="/" element={<Home />} />
             <Route path="/profile" element={<Profile />} />
-            <Route path="/profile/:userId" element={<Profile />} /> {/* Динамический маршрут для чужого профиля */}
+            <Route path="/profile/:userId" element={<Profile />} />
             <Route path="/profile/edit" element={<EditProfile />} />
             <Route path="/lawyers" element={<Lawyers />} />
             <Route path="/team" element={<Team />} />
-            <Route path="/passwordRefresh" element={<RefreshPassword />} />
-            <Route path='/chat' element={<ChatPage/>} />
+            <Route path="/passwordrefresh" element={<RefreshPassword />} />
+            <Route path="/chat" element={<ChatPage />} />
           </Route>
           <Route path="/login" element={<Login />} />
           <Route path="/registration" element={<Registration />} />
+          <Route path="/reset-password" element={<ResetPassword />} /> 
         </Routes>
       </BrowserRouter>
     </Provider>
