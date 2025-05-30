@@ -3,5 +3,5 @@ export default (revievs) => {
     revievs.forEach(el => {
         res += el.rating;
     });
-    return res;
+    return res / revievs.length;
 }
