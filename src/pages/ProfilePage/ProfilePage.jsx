@@ -28,20 +28,7 @@ const ProfilePage = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [isPaying, setIsPaying] = useState(false);
 
-  // Инициализация формы редактирования
-  const initForm = useCallback((data) => ({
-    firstName: data?.firstName || '',
-    lastName: data?.lastName || '',
-    patronymic: data?.patronymic || '',
-    birthDate: data?.birthDate || '',
-    gender: data?.gender || '',
-    aboutMe: data?.LawyerProfile?.aboutMe || '',
-    education: data?.LawyerProfile?.education || '',
-    experienceStartDate: data?.LawyerProfile?.experienceStartDate || '',
-    region: data?.LawyerProfile?.region || '',
-    price: data?.LawyerProfile?.price || '',
-  }), []);
-  const [editForm, setEditForm] = useState(initForm(null));
+
 
   const onReviewSubmit = (message) => {
     fetchWithAuth(`http://localhost:3000/api/v1/lawyers/${userId}/reviews`, {
@@ -205,7 +192,7 @@ const ProfilePage = () => {
             disabled={isPaying || isLoading}
             startIcon={isPaying ? <CircularProgress size={20} /> : null}
           >
-            {isPaying ? 'Обработка...' : 'Оплатить услуги'}
+            {isPaying ? 'Обработка...' : 'Оплатить услуги 300 руб'}
           </Button>
         </Box>
       )}
@@ -239,7 +226,6 @@ const ProfilePage = () => {
               (date) => (date ? `${new Date().getFullYear() - new Date(date).getFullYear()} лет` : null)
             )}
             {renderInfoItem(profile5, 'Регион', LawyerProfile.region)}
-            {renderInfoItem(profile8, 'Цена', LawyerProfile.price, (price) => (price ? `${price} ₽` : null))}
             {renderInfoItem(
               profile3,
               'Статус',

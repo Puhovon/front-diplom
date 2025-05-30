@@ -6,18 +6,16 @@ import Home from '@pages/HomePage/HomePage.jsx';
 import Layout from '@components/Layout.jsx';
 import Registration from '@pages/registrationPage.jsx';
 import Profile from '@pages/ProfilePage/ProfilePage.jsx';
-import About from '@pages/aboutPage.jsx';
-import Contacts from '@pages/contactsPage.jsx';
 import Lawyers from '@pages/LawyerPage/lawyersPage.jsx';
 import Login from '@pages/LoginPage/LoginPage.jsx';
-import Services from '@pages/servicesPage.jsx';
 import RefreshPassword from '@pages/RefreshPassword/RefreshPassword.jsx';
 import ChatPage from '@pages/ChatPage/chatPage.jsx';
 import EditProfile from './pages/ProfilePage/EditProfile.jsx';
-
+import Team from './pages/TeamPage.jsx/TeamPage.jsx';
 
 import '@styles/global.css';
 import '@styles/variables.css';
+
 
 
 function App() {
@@ -30,10 +28,8 @@ function App() {
             <Route path="/profile" element={<Profile />} />
             <Route path="/profile/:userId" element={<Profile />} /> {/* Динамический маршрут для чужого профиля */}
             <Route path="/profile/edit" element={<EditProfile />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/contacts" element={<Contacts />} />
             <Route path="/lawyers" element={<Lawyers />} />
-            <Route path="/services" element={<Services />} />
+            <Route path="/team" element={<Team />} />
             <Route path="/passwordRefresh" element={<RefreshPassword />} />
             <Route path='/chat' element={<ChatPage initialChats={[{ id: 1, name: "Arkay", lastMessage: "привет" }]} />} />
           </Route>

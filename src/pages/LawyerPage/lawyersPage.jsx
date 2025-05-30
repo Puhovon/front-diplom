@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styles from '@styles/lawyersPage.module.css';
 import Input from '@components/Input/index.jsx';
 import LawyerCard from '@components/LawyerCard/index.jsx';
@@ -10,6 +11,7 @@ import scope from '@assets/icons/scope.svg';
 
 const Lawyers = () => {
   const { accessToken } = useAuth();
+  const navigate = useNavigate();
   const [lawyers, setLawyers] = useState([]);
   const [filteredLawyers, setFilteredLawyers] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -25,40 +27,56 @@ const Lawyers = () => {
     'Налоговое право',
   ];
 
+  // Перенаправление на страницу авторизации, если пользователь не авторизован
+  useEffect(() => {
+    if (!accessToken) {
+      navigate('/login');
+    }
+  }, [accessToken, navigate]);
+
+  // Загрузка данных юристов
   useEffect(() => {
     const fetchLawyers = async () => {
       try {
         const response = await fetch('http://localhost:3000/api/v1/lawyers', {
           method: 'GET',
           headers: {
-            'Authorization': `Bearer ${accessToken}`,
+            Authorization: `Bearer ${accessToken}`,
             'Content-Type': 'application/json',
           },
         });
-        if (!response.ok) throw new Error('Failed to fetch lawyers');
+
+        if (!response.ok) {
+          if (response.status === 401) {
+            navigate('/login'); // Редирект при неавторизованном доступе
+          }
+          throw new Error('Ошибка при загрузке юристов');
+        }
+
         const { data } = await response.json();
-        // Transform API data to match expected format
-        const transformedLawyers = data.map(lawyer => ({
+        const transformedLawyers = data.map((lawyer) => ({
           id: lawyer.id,
           name: `${lawyer.firstName} ${lawyer.lastName} ${lawyer.patronymic || ''}`.trim(),
-          specialization: lawyer.LawyerProfile?.Specializations || availableSpecializations[0], // Fallback to first specialization if none provided
-          city: lawyer.LawyerProfile?.region || 'Unknown',
+          specialization: lawyer.LawyerProfile?.Specializations || availableSpecializations[0],
+          city: lawyer.LawyerProfile?.region || 'Неизвестно',
           avatar: lawyer.avatar_url || '/default-avatar.png',
-          rating: 0, // Rating not provided in API response, using 0 as default
+          rating: 0, // Значение по умолчанию, если рейтинг отсутствует
           price: lawyer.LawyerProfile?.price || 0,
         }));
+
         setLawyers(transformedLawyers);
         setFilteredLawyers(transformedLawyers);
       } catch (error) {
-        console.error('Error fetching lawyers:', error);
+        console.error('Ошибка загрузки юристов:', error);
       }
     };
 
     if (accessToken) {
       fetchLawyers();
     }
-  }, [accessToken]);
+  }, [accessToken, navigate]);
 
+  // Применение фильтров при изменении параметров
   useEffect(() => {
     applyFilters();
   }, [searchQuery, specializations, priceRange, ratingRange, lawyers]);
