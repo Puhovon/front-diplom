@@ -1,190 +1,211 @@
+/* Основной контейнер чата */
 .container {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-  width: 100%;
-  margin: 0 auto;
-  border: 1px solid #e0e0e0;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #f5f5f5;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0; /* Предотвращает переполнение */
+    background-color: var(--background-secondary, #ffffff);
+    font-family: system-ui, -apple-system, sans-serif;
 }
 
-/* Header */
+/* Заголовок чата */
 .header {
-  padding: 15px 20px;
-  background-color: var(--blue-400);
-  color: white;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: 10px;
+    padding: 12px 16px;
+    background-color: var(--blue-400, #007bff);
+    color: var(--text-inverse, #ffffff);
+    font-size: 1.125rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-bottom: 1px solid var(--border-color, #e0e0e0);
 }
 
 .statusIndicator {
-  right: 15px;
-  width: 10px;
-  height: 10px;
-  background-color: #4CAF50;
-  border-radius: 50%;
+    width: 10px;
+    height: 10px;
+    background-color: var(--status-online, #4caf50);
+    border-radius: 50%;
+    flex-shrink: 0;
 }
 
-/* Messages area */
+/* Контейнер сообщений */
 .messagesContainer {
-  flex: 1;
-  padding: 15px;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  background-color: #f9f9f9;
+    flex: 1;
+    padding: 16px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    height: 100%;
+    background-color: var(--background-tertiary, #f9f9f9);
+    max-height: 60vh;
+    height: 100%;
 }
 
+/* Пузырьки сообщений */
 .messageBubble {
-  padding: 10px 15px;
-  border-radius: 18px;
-  max-width: 80%;
-  word-break: break-word;
-  animation: fadeIn 0.3s ease;
+    padding: 10px 14px;
+    border-radius: 16px;
+    max-width: 75%;
+    word-break: break-word;
+    animation: fadeIn 0.3s ease;
 }
 
 .messageContent {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
 }
 
 .messageText {
-  margin: 0;
-  line-height: 1.4;
+    margin: 0;
+    font-size: 0.9375rem;
+    line-height: 1.4;
 }
 
 .messageTime {
-  margin: 0;
-  font-size: 0.75rem;
-  opacity: 0.8;
-  align-self: flex-end;
+    margin: 0;
+    font-size: 0.75rem;
+    opacity: 0.7;
+    align-self: flex-end;
 }
 
 .userBubble {
-  background-color: var(--blue-400);
-  color: white;
-  align-self: flex-end;
-  border-bottom-right-radius: 5px;
+    background-color: var(--blue-400, #007bff);
+    color: var(--text-inverse, #ffffff);
+    align-self: flex-end;
+    border-bottom-right-radius: 4px;
 }
 
 .userBubble .messageTime {
-  color: rgba(255, 255, 255, 0.7);
+    color: rgba(255, 255, 255, 0.7);
 }
 
 .otherBubble {
-  background-color: #FFFFFF;
-  align-self: flex-start;
-  border-bottom-left-radius: 5px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    background-color: var(--background-secondary, #ffffff);
+    color: var(--text-primary, #1a1a1a);
+    align-self: flex-start;
+    border-bottom-left-radius: 4px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
 }
 
-/* Input area */
+/* Поле ввода */
 .inputContainer {
-  display: flex;
-  padding: 12px;
-  background-color: white;
-  border-top: 1px solid #e0e0e0;
+    display: flex;
+    padding: 12px 16px;
+    background-color: var(--background-secondary, #ffffff);
+    border-top: 1px solid var(--border-color, #e0e0e0);
+    gap: 8px;
 }
 
 .input {
-  flex: 1;
-  padding: 10px 15px;
-  border: 1px solid #ddd;
-  border-radius: 24px;
-  font-size: 16px;
-  outline: none;
-  transition: border-color 0.3s;
+    flex: 1;
+    padding: 10px 16px;
+    border: 1px solid var(--border-color, #e0e0e0);
+    border-radius: 20px;
+    font-size: 0.9375rem;
+    outline: none;
+    transition: border-color 0.2s ease;
 }
 
 .input:focus {
-  border-color: var(--blue-400);
+    border-color: var(--blue-400, #007bff);
 }
 
 .sendButton {
-  margin-left: 10px;
-  padding: 10px 20px;
-  background-color: var(--blue-400);
-  color: white;
-  border: none;
-  border-radius: 24px;
-  cursor: pointer;
-  font-weight: 600;
-  transition: background-color 0.3s;
-  white-space: nowrap;
+    padding: 10px 20px;
+    background-color: var(--blue-400, #007bff);
+    color: var(--text-inverse, #ffffff);
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    transition: background-color 0.2s ease;
 }
 
-.sendButton:hover {
-  background-color: var(--blue-500);
+.sendButton:hover:not(:disabled) {
+    background-color: var(--blue-500, #0056b3);
 }
 
 .sendButton:disabled {
-  background-color: var(--text-gray-color);
-  cursor: not-allowed;
+    background-color: var(--background-disabled, #cccccc);
+    cursor: not-allowed;
 }
 
-/* Animations */
+/* Сообщение "Нет сообщений" */
+.noMessages {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--text-secondary, #666666);
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+/* Анимации */
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
-/* Media Queries for Mobile */
-@media (max-width: 600px) {
-  .container {
-    height: 100vh;
-    max-width: 100%;
-    border-radius: 0;
-    border: none;
-  }
-  
-  .header {
-    padding: 12px 15px;
-  }
-  
-  .messagesContainer {
-    padding: 10px;
-  }
-  
-  .messageBubble {
-    max-width: 85%;
-    padding: 8px 12px;
-  }
-  
-  .inputContainer {
-    padding: 10px;
-  }
-  
-  .input {
-    padding: 8px 12px;
-  }
-  
-  .sendButton {
-    padding: 8px 15px;
-    margin-left: 8px;
-  }
+/* Адаптивность */
+@media (max-width: 768px) {
+    .container {
+        border-radius: 0;
+    }
+
+    .header {
+        padding: 10px 12px;
+        font-size: 1rem;
+    }
+
+    .messagesContainer {
+        padding: 12px;
+        max-height: calc(100vh - 60px - 64px); /* Учитываем высоту header и inputContainer */
+    }
+
+    .messageBubble {
+        max-width: 80%;
+        padding: 8px 12px;
+    }
+
+    .inputContainer {
+        padding: 10px 12px;
+    }
+
+    .input {
+        padding: 8px 12px;
+        font-size: 0.875rem;
+    }
+
+    .sendButton {
+        padding: 8px 16px;
+        font-size: 0.875rem;
+    }
 }
 
-/* For very small screens */
-@media (max-width: 400px) {
-  .messageText {
-    font-size: 0.9rem;
-  }
-  
-  .messageTime {
-    font-size: 0.65rem;
-  }
-  
-  .input {
-    font-size: 14px;
-  }
-  
-  .sendButton {
-    font-size: 14px;
-  }
+@media (max-width: 480px) {
+    .messageText {
+        font-size: 0.875rem;
+    }
+
+    .messageTime {
+        font-size: 0.6875rem;
+    }
+
+    .input {
+        font-size: 0.8125rem;
+    }
+
+    .sendButton {
+        font-size: 0.8125rem;
+        padding: 8px 12px;
+    }
+
+    .noMessages {
+        font-size: 0.9375rem;
+    }
 }
