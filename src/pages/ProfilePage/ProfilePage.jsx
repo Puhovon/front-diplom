@@ -18,6 +18,7 @@ import profile9 from '@assets/icons/profile/profile9.png';
 import profile10 from '@assets/icons/profile/profile10.png';
 import FeedbackForm from '@components/FeedBackForm/feedBackForm';
 import Reviews from '@components/Reviews/Reviews';
+import calculateRating from '../../utils/calculateRating';
 
 const ProfilePage = () => {
   const { userId } = useParams();
@@ -194,7 +195,7 @@ const ProfilePage = () => {
           <Typography className={styles.subtitle}>
             Специализация: {LawyerProfile.Specializations?.join(', ') || 'Не указана'}
           </Typography>
-          <Typography className={styles.rating}>4.5 ★</Typography>
+          <Typography className={styles.rating}>{}</Typography>
         </>
       )}
       {userId && user.role === 'client' && (
