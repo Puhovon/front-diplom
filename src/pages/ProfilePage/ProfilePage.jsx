@@ -1,9 +1,10 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, redirect } from 'react-router-dom';
 import useAuth from '@hooks/useAuth';
 import {
   Avatar, CircularProgress, Alert, Fade,
-  Typography, Box, Button
+  Typography, Box, Button,
+  Rating
 } from '@mui/material';
 import styles from './Profile.module.css';
 import defaultAvatar from '@assets/icons/default-avatar.svg';
@@ -18,6 +19,7 @@ import profile9 from '@assets/icons/profile/profile9.png';
 import profile10 from '@assets/icons/profile/profile10.png';
 import FeedbackForm from '@components/FeedBackForm/feedBackForm';
 import Reviews from '@components/Reviews/Reviews';
+import calculateRating from '../../utils/calculateRating';
 
 const ProfilePage = () => {
   const { userId } = useParams();
@@ -51,12 +53,13 @@ const ProfilePage = () => {
       const response = await fetchWithAuth(`http://localhost:3000/api/v1/payments`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${accessToken}` },
-        body: JSON.stringify({ lawyerId: userId }),
+        body: JSON.stringify({ lawyerId: userId, redirectUrl: window.location.href }),
       });
 
       if (!response.ok) {
         throw new Error(`Ошибка сервера: ${response.status} - ${response.statusText}`);
       }
+
 
       const text = await response.text();
       const data = text ? JSON.parse(text) : {};
@@ -74,6 +77,14 @@ const ProfilePage = () => {
       }
     } finally {
       setIsPaying(false);
+      const response = await fetchWithAuth('http://localhost:3000/api/v1/chats', {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${accessToken}` },
+        body: JSON.stringify({ targetUserId: profileData.id })
+      });
+      if(!response.ok) {
+        throw new Error(`Ошибка сервера: ${response.status} - ${response.statusText}`);
+      }
     }
   };
 
@@ -81,7 +92,7 @@ const ProfilePage = () => {
   const loadProfile = useCallback(async () => {
     setIsLoading(true);
     setError(null);
-
+    
     try {
       if (!accessToken) throw new Error('Требуется авторизация');
 
@@ -180,7 +191,7 @@ const ProfilePage = () => {
           <Typography className={styles.subtitle}>
             Специализация: {LawyerProfile.Specializations?.join(', ') || 'Не указана'}
           </Typography>
-          <Typography className={styles.rating}>4.5 ★</Typography>
+          <Typography variant='p' className={styles.rating}>{`${calculateRating(LawyerProfile.reviews)}`}</Typography>
         </>
       )}
       {userId && user.role === 'client' && profileData.role === 'lawyer' && (

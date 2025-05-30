@@ -1,20 +1,30 @@
 import styles from '@styles/chatComponent.module.css';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
-export default ({ id, name, callBack, initialMessages }) => {
-    const [messages, setMessages] = useState(initialMessages);
+export default ({ id, myId, name, callBack, initialMessages, isSending }) => {
+    const [messages, setMessages] = useState([]);
     const [inputValue, setInputValue] = useState('');
+
+    // Обновляем сообщения при изменении initialMessages
+    useEffect(() => {
+        console.log(initialMessages)
+        setMessages(initialMessages);
+    }, [initialMessages]);
 
     const onSubmit = (e) => {
         e.preventDefault();
-        if (!inputValue.trim()) return;
+        if (!inputValue.trim() || isSending) return;
+
         const newMessage = {
-            name: 'me',
+            id: Date.now(),
             message: inputValue,
+            senderId: 'me',
+            createdAt: new Date().toISOString(),
             date: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         };
+
         setInputValue("");
-        setMessages([...messages, newMessage]);
+        setMessages(prev => [...prev, newMessage]);
         callBack(id, newMessage);
     }
 
@@ -26,15 +36,21 @@ export default ({ id, name, callBack, initialMessages }) => {
             </div>
 
             <div className={styles.messagesContainer}>
-                {messages.map((el, id) => (
+                {messages.length === 0 ? (
+                    <div className={styles.noMessages}>Сообщений пока нет</div>
+                ) : messages.map((message) => (
                     <div
-                        key={id}
-                        className={`${styles.messageBubble} ${el.name === 'me' ? styles.userBubble : styles.otherBubble
+                        key={message.id}
+                        className={`${styles.messageBubble} ${message.senderId === myId || message.isCurrentUser
+                                ? styles.userBubble
+                                : styles.otherBubble
                             }`}
                     >
                         <div className={styles.messageContent}>
-                            <p className={styles.messageText}>{el.message}</p>
-                            <p className={styles.messageTime}>{el.date}</p>
+                            <p className={styles.messageText}>{message.text}</p>
+                            <p className={styles.messageTime}>
+                                {message.date || new Date(message.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                            </p>
                         </div>
                     </div>
                 ))}
@@ -48,15 +64,16 @@ export default ({ id, name, callBack, initialMessages }) => {
                     onChange={(e) => setInputValue(e.target.value)}
                     value={inputValue}
                     autoFocus
+                    disabled={isSending}
                 />
                 <button
                     type="submit"
                     className={styles.sendButton}
-                    disabled={!inputValue.trim()}
+                    disabled={!inputValue.trim() || isSending}
                 >
-                    Отправить
+                    {isSending ? 'Отправка...' : 'Отправить'}
                 </button>
             </form>
         </div>
     )
-}
+}   
