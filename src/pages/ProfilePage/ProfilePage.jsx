@@ -6,7 +6,7 @@ import {
   Typography, Box, Button
 } from '@mui/material';
 import styles from './Profile.module.css';
-import defaultAvatar from '@assets/icons/default-avatar.png';
+import defaultAvatar from '@assets/icons/default-avatar.svg';
 import man from '@assets/icons/lawyers/man.png';
 import FeedbackForm from '@components/FeedBackForm/feedBackForm';
 

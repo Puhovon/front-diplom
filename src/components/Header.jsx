@@ -14,7 +14,7 @@ import exit from '@assets/icons/iconamoon_exit-bold.png';
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLoadingUser, setIsLoadingUser] = useState(false);
-  const [isTokenLoading, setIsTokenLoading] = useState(true); // Новое состояние для загрузки токена
+  const [isTokenLoading, setIsTokenLoading] = useState(true);
   const { user, accessToken, handleLogout, authError, getUserInfo } = useAuth();
   const dispatch = useDispatch();
 
@@ -22,13 +22,11 @@ const Header = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
-  // Проверяем, загружен ли токен
   useEffect(() => {
     const checkToken = async () => {
       try {
-        // Эмуляция проверки токена (замените на реальную логику из useAuth)
         if (accessToken === undefined || accessToken === null) {
-          await new Promise((resolve) => setTimeout(resolve, 500)); // Имитация асинхронной загрузки
+          await new Promise((resolve) => setTimeout(resolve, 500));
         }
       } catch (err) {
         console.error('Ошибка проверки токена:', err);
@@ -62,14 +60,13 @@ const Header = () => {
   };
 
   useEffect(() => {
-    if (isTokenLoading) return; // Ждем, пока токен не будет загружен
+    if (isTokenLoading) return;
 
     if (accessToken && (!user || !Object.keys(user).length)) {
       fetchUser();
     }
   }, [accessToken, isTokenLoading]);
 
-  // Если токен еще загружается
   if (isTokenLoading) {
     return (
       <header className={styles.header}>
@@ -84,7 +81,6 @@ const Header = () => {
     );
   }
 
-  // Если пользователь еще загружается
   if (accessToken && (!user || !Object.keys(user).length) && isLoadingUser) {
     return (
       <header className={styles.header}>
@@ -99,7 +95,6 @@ const Header = () => {
     );
   }
 
-  // Отображаем имя пользователя или запасной текст
   const displayName = user?.firstName || user?.name || 'Пользователь';
 
   return (
@@ -132,6 +127,18 @@ const Header = () => {
                 Юристы
               </NavLink>
             </li>
+            {user && accessToken && (
+              <li>
+                <NavLink
+                  to="/chat"
+                  className={({ isActive }) =>
+                    isActive ? `${styles.navLink} ${styles.active}` : styles.navLink
+                  }
+                >
+                  Мои чаты
+                </NavLink>
+              </li>
+            )}
           </ul>
         </nav>
         {user && accessToken ? (
@@ -147,7 +154,7 @@ const Header = () => {
                 <img src={strel} alt="Вниз" />
               </div>
               <div className={styles.dropdownContent}>
-                <Link  onClick={fetchUser} to="/profile" className={styles.dropdownItem}>
+                <Link onClick={fetchUser} to="/profile" className={styles.dropdownItem}>
                   <img src={profile} alt="user" /> Профиль
                 </Link>
                 <button onClick={handleLogout} className={styles.dropdownItem}>
@@ -201,6 +208,17 @@ const Header = () => {
                       Юристы
                     </NavLink>
                   </li>
+                  {user && accessToken && (
+                    <li>
+                      <NavLink
+                        to="/chat"
+                        className={({ isActive }) => (isActive ? `${styles.mobileNavLink} ${styles.active}` : styles.mobileNavLink)}
+                        onClick={toggleMenu}
+                      >
+                        Мои чаты
+                      </NavLink>
+                    </li>
+                  )}
                   <li>
                     <NavLink
                       to="/about"

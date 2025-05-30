@@ -1,7 +1,7 @@
 /* Стили для подвала */
 footer {
     padding: 60px 40px 50px 40px;
-    background-color: var(--blue-400);
+    background-color: var(--button-blue-color);
 }
 
 /* Цвет текста для всех элементов подвала */

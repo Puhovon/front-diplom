@@ -96,15 +96,7 @@ const Footer = () => {
                         </div>
                     </div>
                     <div className={styles.column}>
-                        <div className={styles.subscribe}>
-                            <Input
-                                type="email"
-                                placeholder="Введите электронную почту"
-                                className={styles.input}
-                                styles={{backgroundColor: '#fffff'}}
-                            />
-                            <button className={styles.button}>Подписаться</button>
-                        </div>
+                        
                     </div>
                 </div>
                 <div className={styles.copyright}>

@@ -1,6 +1,9 @@
 .hero {
   background: -webkit-linear-gradient(90deg, #4a3aff, #6d3aff);
   background: linear-gradient(90deg, #4a3aff, #6d3aff);
+  background-image: url(../assets/iamages/vid-speredi-razmytyi-advokat-rabotaet.jpg);
+  background-position: top;
+  background-size: cover;
   padding: 148px 0;
 }
 
@@ -29,13 +32,16 @@
   line-height: 30px;
   letter-spacing: 0;
   text-align: center;
-  margin: 100px 0 0 0; /* paragraph spacing снизу */
+  margin: 100px 0 0 0;
+  /* paragraph spacing снизу */
   display: flex;
-  align-items: center; /* vertical alignment: middle */
-  justify-content: center; /* horizontal alignment: center */
+  align-items: center;
+  /* vertical alignment: middle */
+  justify-content: center;
+  /* horizontal alignment: center */
 }
 
-.button:hover > .image {
+.button:hover>.image {
   transform: translateX(5px);
 }
 
@@ -53,44 +59,75 @@
   font-size: 32px;
 }
 
-.specializations{
+.specializations {
   padding: 80px 0 140px 0;
 }
-.specializations h2{
+
+.specializations h2 {
   color: var(--headings-black-color);
   font-size: 32px;
 }
+
 .specializationsList {
   display: grid;
-  grid-template-areas: 
+  grid-template-areas:
     "item1 item2 item3 item4"
     "item5 item6 item7 item8"
     "item9 item9 item10 item10";
-  gap: 20px; 
-  padding: 20px; 
+  gap: 20px;
+  padding: 20px;
 }
 
-.specializationsItem:nth-child(1) { grid-area: item1; }
-.specializationsItem:nth-child(2) { grid-area: item2; }
-.specializationsItem:nth-child(3) { grid-area: item3; }
-.specializationsItem:nth-child(4) { grid-area: item4; }
-.specializationsItem:nth-child(5) { grid-area: item5; }
-.specializationsItem:nth-child(6) { grid-area: item6; }
-.specializationsItem:nth-child(7) { grid-area: item7; }
-.specializationsItem:nth-child(8) { grid-area: item8; }
-.specializationsItem:nth-child(9) { grid-area: item9; }
-.specializationsItem:nth-child(10) { grid-area: item10; }
+.specializationsItem:nth-child(1) {
+  grid-area: item1;
+}
+
+.specializationsItem:nth-child(2) {
+  grid-area: item2;
+}
+
+.specializationsItem:nth-child(3) {
+  grid-area: item3;
+}
+
+.specializationsItem:nth-child(4) {
+  grid-area: item4;
+}
+
+.specializationsItem:nth-child(5) {
+  grid-area: item5;
+}
+
+.specializationsItem:nth-child(6) {
+  grid-area: item6;
+}
+
+.specializationsItem:nth-child(7) {
+  grid-area: item7;
+}
+
+.specializationsItem:nth-child(8) {
+  grid-area: item8;
+}
+
+.specializationsItem:nth-child(9) {
+  grid-area: item9;
+}
+
+.specializationsItem:nth-child(10) {
+  grid-area: item10;
+}
 
 .specializationsItem {
   display: flex;
   background-color: var(--button-blue-color);
   gap: 10px;
-  color: white; 
+  color: white;
   padding: 20px;
   text-align: start;
   align-items: center;
-  border-radius: 10px; 
-  transition: background-color 0.3s; 
+  border-radius: 10px;
+  transition: background-color 0.3s;
 }
 
 .specializationsItem:hover {
@@ -106,10 +143,11 @@
   font-size: 20px;
   font-weight: 500;
 }
+
 @media (max-width: 920px) {
   .specializationsList {
 
-    grid-template-areas: 
+    grid-template-areas:
       "item1"
       "item2"
       "item3"
@@ -121,16 +159,20 @@
       "item9"
       "item10";
   }
-  .specializations{
+
+  .specializations {
     padding: 80px 20px 140px 20px;
   }
-  .specializationsItem{
+
+  .specializationsItem {
     height: 40px;
   }
+
   .specializationsItem p {
     margin: 0;
     font-size: 20px;
   }
+
   .specializationsItem img {
     height: 24px;
   }

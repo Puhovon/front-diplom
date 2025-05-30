@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import styles from './style.module.css';
-import defaultAvatar from '../../assets/icons/default-avatar.png';
+import defaultAvatar from '../../assets/icons/default-avatar.svg';
 // import StarIcon from '../../assets/icons/star.svg';
 
 const LawyerCard = ({ id, name, specialization, city, photo, rating }) => {
