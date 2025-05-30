@@ -47,7 +47,7 @@ export default ({ id, myId, name, callBack, initialMessages, isSending }) => {
                             }`}
                     >
                         <div className={styles.messageContent}>
-                            <p className={styles.messageText}>{message.text}</p>
+                            <p className={styles.messageText}>{message.text || message.message}</p>
                             <p className={styles.messageTime}>
                                 {message.date || new Date(message.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                             </p>
