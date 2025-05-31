@@ -190,15 +190,7 @@ const Header = () => {
                       Главная
                     </NavLink>
                   </li>
-                  <li>
-                    <NavLink
-                      to="/services"
-                      className={({ isActive }) => (isActive ? `${styles.mobileNavLink} ${styles.active}` : styles.mobileNavLink)}
-                      onClick={toggleMenu}
-                    >
-                      Услуги
-                    </NavLink>
-                  </li>
+                  
                   <li>
                     <NavLink
                       to="/lawyers"
@@ -219,24 +211,6 @@ const Header = () => {
                       </NavLink>
                     </li>
                   )}
-                  <li>
-                    <NavLink
-                      to="/about"
-                      className={({ isActive }) => (isActive ? `${styles.mobileNavLink} ${styles.active}` : styles.mobileNavLink)}
-                      onClick={toggleMenu}
-                    >
-                      О нас
-                    </NavLink>
-                  </li>
-                  <li>
-                    <NavLink
-                      to="/contacts"
-                      className={({ isActive }) => (isActive ? `${styles.mobileNavLink} ${styles.active}` : styles.mobileNavLink)}
-                      onClick={toggleMenu}
-                    >
-                      Контакты
-                    </NavLink>
-                  </li>
                 </ul>
               </div>
             </div>
@@ -279,15 +253,7 @@ const Header = () => {
                       Главная
                     </NavLink>
                   </li>
-                  <li>
-                    <NavLink
-                      to="/services"
-                      className={({ isActive }) => (isActive ? `${styles.mobileNavLink} ${styles.active}` : styles.mobileNavLink)}
-                      onClick={toggleMenu}
-                    >
-                      Услуги
-                    </NavLink>
-                  </li>
+                  
                   <li>
                     <NavLink
                       to="/lawyers"
@@ -297,15 +263,7 @@ const Header = () => {
                       Юристы
                     </NavLink>
                   </li>
-                  <li>
-                    <NavLink
-                      to="/about"
-                      className={({ isActive }) => (isActive ? `${styles.mobileNavLink} ${styles.active}` : styles.mobileNavLink)}
-                      onClick={toggleMenu}
-                    >
-                      О нас
-                    </NavLink>
-                  </li>
+                  
                   <li>
                     <NavLink
                       to="/contacts"
