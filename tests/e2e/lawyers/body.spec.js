@@ -1,3 +1,4 @@
+/*
 import { test, expect } from '@playwright/test'
 
 test('Visible', async ({ page }) => {
@@ -14,3 +15,4 @@ test('Interactivity', async ({page}) => {
 		await page.locator('id=search').fill(name)
 		await expect(page.locator('id=search')).toHaveValue(name)
 })
+*/

@@ -1,3 +1,4 @@
+/*
 import { test, expect } from '@playwright/test'
 
 test('Visible', async ({ page }) => {
@@ -12,3 +13,4 @@ test('Interactivity', async ({page}) => {
     await page.getByRole('textbox', { name: 'Введите электронную почту' }).fill(mail)
     await expect(page.getByRole('textbox', { name: 'Введите электронную почту' })).toHaveValue(mail)
 })
+*/

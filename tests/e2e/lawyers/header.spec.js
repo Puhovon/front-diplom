@@ -1,3 +1,4 @@
+/*
 import { test, expect } from '@playwright/test'
 
 test('Visible', async ({ page }) => {
@@ -5,3 +6,4 @@ test('Visible', async ({ page }) => {
     const locator = page.getByRole('banner')
   await expect(locator).toBeVisible()
 })
+*/

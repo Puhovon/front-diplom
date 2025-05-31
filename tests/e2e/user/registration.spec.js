@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test'
 
 test('Visible', async ({ page }) => {
-  await page.goto('http://localhost:5173/registration')
+  await page.goto('https://lawyerhub.ru/registration')
   const locator1 = page.locator('._leftWrapper_1tzsr_19')
   const locator2 = page.locator('._rightWrapper_1tzsr_27')
   const locator3 = page.locator('._logo_1tzsr_11')
@@ -11,7 +11,7 @@ test('Visible', async ({ page }) => {
 })
 
 test('Interactivity User', async ({page}) => {
-	await page.goto('http://localhost:5173/registration')
+	await page.goto('https://lawyerhub.ru/registration')
 	const firstName = 'Иван'
 	const secondName = 'Ианов'
 	const thirdName = 'Иванович'
@@ -38,7 +38,7 @@ test('Interactivity User', async ({page}) => {
 })
 
 test('Interactivity Lawyer 1', async ({page}) => {
-	await page.goto('http://localhost:5173/registration')
+	await page.goto('https://lawyerhub.ru/registration')
 	const firstName = 'Иван'
 	const secondName = 'Ианов'
 	const thirdName = 'Иванович'
@@ -65,7 +65,7 @@ test('Interactivity Lawyer 1', async ({page}) => {
 })
 
 test('Interactivity Lawyer 2', async ({page}) => {
-	await page.goto('http://localhost:5173/registration')
+	await page.goto('https://lawyerhub.ru/registration')
 	const firstName = 'Иван'
 	const secondName = 'Ианов'
 	const thirdName = 'Иванович'
