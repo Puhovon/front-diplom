@@ -15,7 +15,7 @@ const Lawyers = () => {
   const [lawyers, setLawyers] = useState([]);
   const [filteredLawyers, setFilteredLawyers] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [specializations, setSpecializations] = useState([]);
+  const [selectedSpecializations, setSelectedSpecializations] = useState([]);
   const [priceRange, setPriceRange] = useState([0, 10000]);
   const [ratingRange, setRatingRange] = useState([0, 5]);
 
@@ -27,14 +27,12 @@ const Lawyers = () => {
     'Налоговое право',
   ];
 
-  // Перенаправление на страницу авторизации, если пользователь не авторизован
   useEffect(() => {
     if (!accessToken) {
       navigate('/login');
     }
   }, [accessToken, navigate]);
 
-  // Загрузка данных юристов
   useEffect(() => {
     const fetchLawyers = async () => {
       try {
@@ -48,19 +46,19 @@ const Lawyers = () => {
 
         if (!response.ok) {
           if (response.status === 401) {
-            navigate('/login'); // Редирект при неавторизованном доступе
+            navigate('/login');
           }
           throw new Error('Ошибка при загрузке юристов');
         }
 
         const { data } = await response.json();
         const transformedLawyers = data.map((lawyer) => ({
-          id: lawyer.id,
+          ...lawyer,
           name: `${lawyer.firstName} ${lawyer.lastName} ${lawyer.patronymic || ''}`.trim(),
-          specialization: lawyer.LawyerProfile?.Specializations || availableSpecializations[0],
+          specializations: lawyer.LawyerProfile?.Specializations?.map(s => s.name) || ['Не указано'],
           city: lawyer.LawyerProfile?.region || 'Неизвестно',
-          avatar: lawyer.avatar_url || '/default-avatar.png',
-          rating: 0, // Значение по умолчанию, если рейтинг отсутствует
+          avatar: lawyer.avatarPath || '/default-avatar.png',
+          rating: lawyer.LawyerProfile?.rating || 0,
           price: lawyer.LawyerProfile?.price || 0,
         }));
 
@@ -76,10 +74,9 @@ const Lawyers = () => {
     }
   }, [accessToken, navigate]);
 
-  // Применение фильтров при изменении параметров
   useEffect(() => {
     applyFilters();
-  }, [searchQuery, specializations, priceRange, ratingRange, lawyers]);
+  }, [searchQuery, selectedSpecializations, priceRange, ratingRange, lawyers]);
 
   const applyFilters = () => {
     let filtered = [...lawyers];
@@ -90,9 +87,11 @@ const Lawyers = () => {
       );
     }
 
-    if (specializations.length > 0) {
+    if (selectedSpecializations.length > 0) {
       filtered = filtered.filter((lawyer) =>
-        specializations.some((spec) => lawyer.specialization.includes(spec))
+        selectedSpecializations.some(spec => 
+          lawyer.specializations.includes(spec)
+        )
       );
     }
 
@@ -141,8 +140,8 @@ const Lawyers = () => {
               <Autocomplete
                 multiple
                 options={availableSpecializations}
-                value={specializations}
-                onChange={(event, newValue) => setSpecializations(newValue)}
+                value={selectedSpecializations}
+                onChange={(event, newValue) => setSelectedSpecializations(newValue)}
                 renderInput={(params) => (
                   <TextField
                     {...params}
@@ -186,7 +185,7 @@ const Lawyers = () => {
                   <LawyerCard
                     id={lawyer.id}
                     name={lawyer.name}
-                    specialization={lawyer.specialization}
+                    specialization={lawyer.specializations.join(', ')}
                     city={lawyer.city}
                     photo={lawyer.avatar}
                     rating={lawyer.rating}
