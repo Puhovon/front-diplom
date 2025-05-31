@@ -15,7 +15,7 @@ export default () => {
     useEffect(() => {
         async function fetchChats() {
             try {
-                const response = await fetchWithAuth('http://localhost:3000/api/v1/chats', {
+                const response = await fetchWithAuth(`${import.meta.env.VITE_API_URL}/api/v1/chats`, {
                     method: 'GET',
                     headers: { 'Authorization': `Bearer ${accessToken}` },
                 });
@@ -62,7 +62,7 @@ export default () => {
     }
 
     const getMessages = async (chatId) => {
-        const response = await fetchWithAuth(`http://localhost:3000/api/v1/chats/${chatId}/messages`, {
+        const response = await fetchWithAuth(`${import.meta.env.VITE_API_URL}/api/v1/chats/${chatId}/messages`, {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${accessToken}`,
@@ -83,7 +83,7 @@ export default () => {
             if (!selectedChat) return;
 
             // Отправка сообщения
-            const response = await fetchWithAuth(`http://localhost:3000/api/v1/chats/${chatId}/messages`, {
+            const response = await fetchWithAuth(`${import.meta.env.VITE_API_URL}/api/v1/chats/${chatId}/messages`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${accessToken}`,

@@ -51,7 +51,7 @@ const Login = () => {
     if (!validateForm()) return;
 
     try {
-      const response = await fetchWithoutAuth('http://localhost:3000/api/v1/auth/login', {
+      const response = await fetchWithoutAuth(`${import.meta.env.VITE_API_URL}/api/v1/auth/login`, {
         method: 'POST',
         body: JSON.stringify({
           email: formData.email,

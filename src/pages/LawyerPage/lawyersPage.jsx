@@ -38,7 +38,7 @@ const Lawyers = () => {
   useEffect(() => {
     const fetchLawyers = async () => {
       try {
-        const response = await fetch('http://localhost:3000/api/v1/lawyers', {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/lawyers`, {
           method: 'GET',
           headers: {
             Authorization: `Bearer ${accessToken}`,

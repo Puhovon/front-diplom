@@ -46,7 +46,7 @@ export const updateProfile = async ({ payload, accessToken }) => {
   return await response.json();
 };
 export const forgotPassword = async (email) => {
-  const response = await fetch('http://localhost:3000/api/v1/auth/forgot-password', {
+  const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/auth/forgot-password`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ email }),
@@ -61,7 +61,7 @@ export const forgotPassword = async (email) => {
 };
 
 export const resetPassword = async ({ resetToken, password }) => {
-  const response = await fetch(`http://localhost:3000/api/v1/auth/reset-password/${resetToken}`, {
+  const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/auth/reset-password/${resetToken}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ password }),

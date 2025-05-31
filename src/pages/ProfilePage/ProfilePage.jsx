@@ -33,7 +33,7 @@ const ProfilePage = () => {
 
 
   const onReviewSubmit = (message) => {
-    fetchWithAuth(`http://localhost:3000/api/v1/lawyers/${userId}/reviews`, {
+    fetchWithAuth(`${import.meta.env.VITE_API_URL}/api/v1/lawyers/${userId}/reviews`, {
       method: 'POST',
       body: JSON.stringify(message)
     });
@@ -50,7 +50,7 @@ const ProfilePage = () => {
     setError(null);
 
     try {
-      const response = await fetchWithAuth(`http://localhost:3000/api/v1/payments`, {
+      const response = await fetchWithAuth(`${import.meta.env.VITE_API_URL}/api/v1/payments`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${accessToken}` },
         body: JSON.stringify({ lawyerId: userId, redirectUrl: window.location.href }),
@@ -77,7 +77,7 @@ const ProfilePage = () => {
       }
     } finally {
       setIsPaying(false);
-      const response = await fetchWithAuth('http://localhost:3000/api/v1/chats', {
+      const response = await fetchWithAuth(`${import.meta.env.VITE_API_URL}/api/v1/chats`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${accessToken}` },
         body: JSON.stringify({ targetUserId: profileData.id })
@@ -99,12 +99,12 @@ const ProfilePage = () => {
       let data;
       console.log('userId from useParams:', userId);
       if (userId && userId !== 'edit') {
-        const url = `http://localhost:3000/api/v1/users/${userId}`;
+        const url = `${import.meta.env.VITE_API_URL}/api/v1/users/${userId}`;
         console.log('Fetching profile for userId:', url);
         const response = await fetchWithAuth(url);
         data = await response.json();
       } else {
-        const url = 'http://localhost:3000/api/v1/users/me';
+        const url = `${import.meta.env.VITE_API_URL}/api/v1/users/me`;
         console.log('Fetching current user profile:', url);
         const response = await fetchWithAuth(url);
         data = await response.json();
@@ -131,7 +131,7 @@ const ProfilePage = () => {
     setError(null);
 
     try {
-      await fetchWithAuth('http://localhost:3000/api/v1/users/me', {
+      await fetchWithAuth(`${import.meta.env.VITE_API_URL}/api/v1/users/me`, {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
       });

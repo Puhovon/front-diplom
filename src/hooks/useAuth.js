@@ -82,7 +82,7 @@ const useAuth = () => {
   const refreshTokens = useCallback(async () => {
     try {
       console.log('Attempting to refresh token with refreshToken:', refreshToken);
-      const response = await fetch('http://localhost:3000/api/v1/auth/refresh', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/auth/refresh`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ refreshToken }),
@@ -168,7 +168,7 @@ const useAuth = () => {
 
   const getUserInfo = useCallback(async () => {
     try {
-      const response = await fetchWithAuth('http://localhost:3000/api/v1/users/me', {
+      const response = await fetchWithAuth(`${import.meta.env.VITE_API_URL}/api/v1/users/me`, {
         method: 'GET',
       });
       const userData = await response.json();
