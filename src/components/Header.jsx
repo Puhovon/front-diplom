@@ -80,7 +80,7 @@ const Header = () => {
       </header>
     );
   }
-
+  
   if (accessToken && (!user || !Object.keys(user).length) && isLoadingUser) {
     return (
       <header className={styles.header}>
@@ -157,10 +157,10 @@ const Header = () => {
                 <Link onClick={fetchUser} to="/profile" className={styles.dropdownItem}>
                   <img src={profile} alt="user" /> Профиль
                 </Link>
-                <button onClick={handleLogout} className={styles.dropdownItem}>
+                <Link to='/login' onClick={handleLogout} className={styles.dropdownItem}>
                   <img src={exit} alt="exit" />
                   Выход
-                </button>
+                </Link>
               </div>
             </div>
             <div className={styles.burgerMenu}>
