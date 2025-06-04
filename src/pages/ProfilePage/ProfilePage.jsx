@@ -189,9 +189,9 @@ const ProfilePage = () => {
       {!isClient && LawyerProfile && (
         <>
           <Typography className={styles.subtitle}>
-            Специализация: {LawyerProfile.Specializations?.join(', ') || 'Не указана'}
+            Специализация: {LawyerProfile.Specializations?.map((spec) => spec.name).join(', ') || 'Не указана'}
           </Typography>
-          <Typography variant='p' className={styles.rating}>{`${calculateRating(LawyerProfile.reviews)}`}</Typography>
+          <Typography variant='p' className={styles.rating}>{`${calculateRating(LawyerProfile.reviews) || 'Нет рейтинга'}`}</Typography>
         </>
       )}
       {userId && user.role === 'client' && profileData.role === 'lawyer' && (
