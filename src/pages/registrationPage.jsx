@@ -200,7 +200,7 @@ const Registration = () => {
                 lastName: formData.surname,
                 patronymic: formData.patronymic,
                 gender: formData.gender,
-                birthDate: formData.birthDate,
+                birthDate: formData.birthDate.toString(),
                 email: formData.mail,
                 password: formData.pass,
                 specializations: formData.specialization, // Теперь массив
